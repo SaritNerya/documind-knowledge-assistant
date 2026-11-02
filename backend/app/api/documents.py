@@ -2,6 +2,9 @@ import shutil
 import uuid
 from pathlib import Path
 
+from openai import OpenAIError
+from app.services.ingestion import ingest_document
+
 from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile
 from sqlalchemy.orm import Session
 
@@ -29,7 +32,8 @@ def upload_document(
         raise HTTPException(status_code=400, detail="Only PDF and DOCX files are allowed")
 
     stored_name = f"{uuid.uuid4().hex}{ext}"
-    with open(UPLOAD_DIR / stored_name, "wb") as f:
+    file_path = UPLOAD_DIR / stored_name
+    with open(file_path, "wb") as f:
         shutil.copyfileobj(file.file, f)
 
     doc = Document(
@@ -38,10 +42,27 @@ def upload_document(
         user_id=current_user.id,
     )
     db.add(doc)
+    db.flush()  # נותן ל-doc מזהה (id) בלי לשמור סופית
+
+    try:
+        chunk_count = ingest_document(db, doc.id, file_path)
+    except OpenAIError:
+        db.rollback()
+        file_path.unlink(missing_ok=True)
+        raise HTTPException(status_code=502, detail="Embedding service unavailable")
+    except Exception:
+        db.rollback()
+        file_path.unlink(missing_ok=True)
+        raise HTTPException(status_code=400, detail="Could not read the file")
+
+    if chunk_count == 0:
+        db.rollback()
+        file_path.unlink(missing_ok=True)
+        raise HTTPException(status_code=400, detail="No text found in the file")
+
     db.commit()
     db.refresh(doc)
     return doc
-
 
 @router.get("", response_model=list[DocumentOut])
 def list_documents(
