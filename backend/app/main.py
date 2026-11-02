@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from sqlalchemy import text
 
+from fastapi.middleware.cors import CORSMiddleware
+
 from app.core.database import Base, engine
 from app.models import user, document, chunk  # noqa: כדי שהטבלאות יירשמו
 from app.api import auth, documents, chat
@@ -11,6 +13,12 @@ with engine.begin() as conn:
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="DocuMind")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.include_router(auth.router)
 app.include_router(documents.router)
 app.include_router(chat.router)
