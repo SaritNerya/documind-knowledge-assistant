@@ -4,7 +4,7 @@ from sqlalchemy import text
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.database import Base, engine
-from app.models import user, document, chunk  # noqa: כדי שהטבלאות יירשמו
+from app.models import user, document, chunk, message  # noqa: כדי שהטבלאות יירשמו
 from app.api import auth, documents, chat
 
 with engine.begin() as conn:

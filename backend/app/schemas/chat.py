@@ -11,3 +11,10 @@ class Source(BaseModel):
 class AskResponse(BaseModel):
     answer: str
     sources: list[Source] = []
+
+class MessageOut(BaseModel):
+    id: int
+    role: str
+    content: str
+    sources: list[Source] | None = None
+    model_config = {"from_attributes": True}

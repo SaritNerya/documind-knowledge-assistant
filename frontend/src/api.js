@@ -57,3 +57,6 @@ export function ask(question) {
     body: JSON.stringify({ question }),
   });
 }
+
+export const getMessages = () => request("/messages");
+export const clearMessages = () => request("/messages", { method: "DELETE" });
