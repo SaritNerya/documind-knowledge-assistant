@@ -1,0 +1,45 @@
+{
+  "generated_at": "2026-11-03T19:14:04",
+  "experiments": [
+    {
+      "min_score": 0.2,
+      "retrieval_hit_rate_after": 1.0,
+      "answer_accuracy": 0.6451612903225806,
+      "refusal_rate": 0.8846153846153846,
+      "hallucination_rate": 0.11538461538461539,
+      "avg_retrieval_latency": 0.39243333333333336,
+      "avg_answer_latency": 1.181617543859649,
+      "review_needed_rate": 0.19298245614035087
+    },
+    {
+      "min_score": 0.3,
+      "retrieval_hit_rate_after": 1.0,
+      "answer_accuracy": 0.6451612903225806,
+      "refusal_rate": 0.9230769230769231,
+      "hallucination_rate": 0.07692307692307693,
+      "avg_retrieval_latency": 0.36569999999999997,
+      "avg_answer_latency": 1.112510909090909,
+      "review_needed_rate": 0.19298245614035087
+    },
+    {
+      "min_score": 0.4,
+      "retrieval_hit_rate_after": 0.8387096774193549,
+      "answer_accuracy": 0.5483870967741935,
+      "refusal_rate": 0.8846153846153846,
+      "hallucination_rate": 0.11538461538461539,
+      "avg_retrieval_latency": 0.33708596491228066,
+      "avg_answer_latency": 1.0263318181818182,
+      "review_needed_rate": 0.15789473684210525
+    },
+    {
+      "min_score": 0.5,
+      "retrieval_hit_rate_after": 0.5483870967741935,
+      "answer_accuracy": 0.3225806451612903,
+      "refusal_rate": 0.9230769230769231,
+      "hallucination_rate": 0.07692307692307693,
+      "avg_retrieval_latency": 0.3369719298245614,
+      "avg_answer_latency": 1.2001083333333333,
+      "review_needed_rate": 0.12280701754385964
+    }
+  ]
+}

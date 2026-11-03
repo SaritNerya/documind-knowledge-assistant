@@ -1,3 +1,6 @@
 {
-    "chat.disableAIFeatures": false
+    "chat.disableAIFeatures": false,
+    "python.analysis.extraPaths": [
+        "./backend"
+    ]
 }

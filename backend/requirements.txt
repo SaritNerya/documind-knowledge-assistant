@@ -8,6 +8,6 @@ bcrypt
 python-jose[cryptography]
 python-multipart
 openai
-pgvector
-python-docx
 pypdf
+python-docx
+pgvector

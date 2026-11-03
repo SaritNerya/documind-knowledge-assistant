@@ -4,6 +4,7 @@ from sqlalchemy import text
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.database import Base, engine
+from app.core.config import settings
 from app.models import user, document, chunk, message  # noqa: כדי שהטבלאות יירשמו
 from app.api import auth, documents, chat
 
@@ -15,7 +16,7 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(title="DocuMind")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[o.strip() for o in settings.cors_origins.split(",")],
     allow_methods=["*"],
     allow_headers=["*"],
 )

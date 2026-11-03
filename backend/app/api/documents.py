@@ -31,6 +31,14 @@ def upload_document(
     if ext not in ALLOWED_EXTENSIONS:
         raise HTTPException(status_code=400, detail="Only PDF and DOCX files are allowed")
 
+    existing = (
+        db.query(Document)
+        .filter(Document.user_id == current_user.id, Document.filename == file.filename)
+        .first()
+    )
+    if existing:
+        raise HTTPException(status_code=409, detail="A document with this name already exists")
+
     stored_name = f"{uuid.uuid4().hex}{ext}"
     file_path = UPLOAD_DIR / stored_name
     with open(file_path, "wb") as f:
@@ -43,7 +51,7 @@ def upload_document(
     )
     db.add(doc)
     db.flush()  # נותן ל-doc מזהה (id) בלי לשמור סופית
-
+    
     try:
         chunk_count = ingest_document(db, doc.id, file_path)
     except OpenAIError:

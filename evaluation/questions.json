@@ -1,0 +1,427 @@
+[
+    {
+        "question": "כמה ימי חופשה שנתיים מקבל עובד במשרה מלאה?",
+        "type": "answerable",
+        "source": "vacation-policy.docx",
+        "keywords": [
+            "25 ימי חופשה",
+            "25"
+        ]
+    },
+    {
+        "question": "כמה ימי חופשה לכל היותר אפשר לצבור לשנה הבאה?",
+        "type": "answerable",
+        "source": "vacation-policy.docx",
+        "keywords": [
+            "10 ימים",
+            "10"
+        ]
+    },
+    {
+        "question": "כמה זמן מראש צריך לבקש חופשה של שלושה ימים?",
+        "type": "answerable",
+        "source": "vacation-policy.docx",
+        "keywords": [
+            "5 ימי עבודה",
+            "5"
+        ]
+    },
+    {
+        "question": "מהו פרק הזמן המינימלי להגשת בקשה לחופשה שאורכה ארבעה ימים?",
+        "type": "answerable",
+        "source": "vacation-policy.docx",
+        "keywords": [
+            "14 ימים",
+            "14"
+        ]
+    },
+    {
+        "question": "עד איזו שעה יש לדווח על היעדרות עקב מחלה?",
+        "type": "answerable",
+        "source": "vacation-policy.docx",
+        "keywords": [
+            "09:00"
+        ]
+    },
+    {
+        "question": "באיזה מקרה צריך לצרף אישור רפואי למחלה?",
+        "type": "answerable",
+        "source": "vacation-policy.docx",
+        "keywords": [
+            "יותר מיום מחלה",
+            "אישור רפואי"
+        ]
+    },
+    {
+        "question": "מה מספר ימי העבודה מהבית המקסימלי בשבוע?",
+        "type": "answerable",
+        "source": "remote-work-policy.docx",
+        "keywords": [
+            "יומיים",
+            "2"
+        ]
+    },
+    {
+        "question": "האם עובד חדש רשאי לעבוד מהבית בשבועיים הראשונים?",
+        "type": "answerable",
+        "source": "remote-work-policy.docx",
+        "keywords": [
+            "30 ימי העבודה הראשונים",
+            "משרד בלבד"
+        ]
+    },
+    {
+        "question": "מהן שעות הזמינות הנדרשות לעובדים שעובדים מרחוק?",
+        "type": "answerable",
+        "source": "remote-work-policy.docx",
+        "keywords": [
+            "09:00",
+            "17:00"
+        ]
+    },
+    {
+        "question": "האם ישיבות צוות מתקיימות גם כאשר העובדים עובדים מהבית?",
+        "type": "answerable",
+        "source": "remote-work-policy.docx",
+        "keywords": [
+            "ישיבות צוות",
+            "גם מהבית"
+        ]
+    },
+    {
+        "question": "האם החברה משתתפת ברכישת שולחן או כיסא לעבודה מהבית?",
+        "type": "answerable",
+        "source": "remote-work-policy.docx",
+        "keywords": [
+            "לא מממנת ריהוט ביתי"
+        ]
+    },
+    {
+        "question": "איזה ציוד החברה מספקת לעבודה מרחוק?",
+        "type": "answerable",
+        "source": "remote-work-policy.docx",
+        "keywords": [
+            "מחשב נייד",
+            "אוזניות"
+        ]
+    },
+    {
+        "question": "תוך כמה זמן צריך להגיש בקשה להחזר הוצאות?",
+        "type": "answerable",
+        "source": "expense-policy.docx",
+        "keywords": [
+            "7 ימים",
+            "שבעה ימים"
+        ]
+    },
+    {
+        "question": "איזה מסמך צריך לצרף לבקשת החזר הוצאות?",
+        "type": "answerable",
+        "source": "expense-policy.docx",
+        "keywords": [
+            "קבלה",
+            "חשבונית"
+        ]
+    },
+    {
+        "question": "מי צריך לאשר מראש הוצאה עסקית בסכום של 650 ש\"ח?",
+        "type": "answerable",
+        "source": "expense-policy.docx",
+        "keywords": [
+            "מנהל מחלקה",
+            "אישור מראש"
+        ]
+    },
+    {
+        "question": "כמה זמן לאחר אישור הבקשה מתקבל החזר ההוצאות?",
+        "type": "answerable",
+        "source": "expense-policy.docx",
+        "keywords": [
+            "14 ימים",
+            "14"
+        ]
+    },
+    {
+        "question": "מה מתרחש ביום העבודה הראשון של עובד חדש?",
+        "type": "answerable",
+        "source": "employee-onboarding.docx",
+        "keywords": [
+            "HR",
+            "חתימה",
+            "ציוד"
+        ]
+    },
+    {
+        "question": "באיזה שלב בתהליך הקליטה מתקיימת הדרכת מערכות ואבטחת מידע?",
+        "type": "answerable",
+        "source": "employee-onboarding.docx",
+        "keywords": [
+            "שבוע ראשון",
+            "הדרכת מערכות",
+            "אבטחת מידע"
+        ]
+    },
+    {
+        "question": "מתי מתקיימת שיחת המשוב הראשונה לעובד חדש?",
+        "type": "answerable",
+        "source": "employee-onboarding.docx",
+        "keywords": [
+            "30 ימי עבודה",
+            "שיחת משוב"
+        ]
+    },
+    {
+        "question": "כל כמה זמן יש להחליף סיסמה לפי מדיניות אבטחת המידע?",
+        "type": "answerable",
+        "source": "information-security.docx",
+        "keywords": [
+            "90 ימים",
+            "90"
+        ]
+    },
+    {
+        "question": "כמה ימי מחלה בתשלום מקבל עובד בכל שנה?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "האם החברה מעניקה בונוס שנתי לעובדים?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "מהו השכר ההתחלתי של מפתח תוכנה בחברה?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "האם החברה מספקת ביטוח בריאות פרטי לעובדים?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "כמה זמן נמשכת תקופת הניסיון של עובד חדש?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "האם ניתן לקבל חופשה ללא תשלום ובאילו תנאים?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "כמה ימי חופשה מקבל עובד במשרה חלקית?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "האם אפשר להעביר יותר מעשרה ימי חופשה לשנה הבאה באישור מנהל?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "האם החברה משלמת עבור חיבור אינטרנט ביתי?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "האם העובדים מקבלים תקציב חודשי לרכישת ציוד משרדי לבית?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "האם מותר לעבוד מהבית מחוץ לשעות הזמינות שנקבעו?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "האם החברה מאפשרת עבודה מחו\"ל?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "מהו סכום ההחזר המקסימלי עבור נסיעה עסקית?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "האם אפשר להגיש בקשת החזר ללא קבלה אם מצרפים הסבר?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "האם הוצאות על ארוחת צהריים במהלך יום עבודה מוכרות במקרה של שעות נוספות?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "האם עובד חדש מקבל חונך אישי במהלך החפיפה?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "מהו הציון המינימלי הנדרש בהערכת הביצועים הראשונה?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "האם החברה מחייבת שימוש באפליקציית אימות מסוימת עבור אימות דו-שלבי?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "מהו מספר הטלפון של מוקד אבטחת המידע לדיווח על אירוע?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "כמה ימי חופשה מגיעים לי בשנה?",
+        "type": "answerable",
+        "source": "vacation-policy.docx",
+        "keywords": [
+            "25"
+        ]
+    },
+    {
+        "question": "מה מזג האוויר מחר?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "מה מדיניות הפנסיה בחברה?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "כמה ימי חופשה ניתן להעביר לשנה העוקבת?",
+        "type": "answerable",
+        "source": "vacation-policy.docx",
+        "keywords": [
+            "10"
+        ]
+    },
+    {
+        "question": "כמה זמן מראש צריך להגיש בקשה לחופשה של יותר משלושה ימים?",
+        "type": "answerable",
+        "source": "vacation-policy.docx",
+        "keywords": [
+            "14 ימים"
+        ]
+    },
+    {
+        "question": "עד איזו שעה צריך להודיע למנהל על היעדרות עקב מחלה?",
+        "type": "answerable",
+        "source": "vacation-policy.docx",
+        "keywords": [
+            "09:00"
+        ]
+    },
+    {
+        "question": "כמה ימים בשבוע מותר לעובד לעבוד מהבית?",
+        "type": "answerable",
+        "source": "remote-work-policy.docx",
+        "keywords": [
+            "יומיים"
+        ]
+    },
+    {
+        "question": "כמה זמן עובד חדש חייב לעבוד מהמשרד בלבד?",
+        "type": "answerable",
+        "source": "remote-work-policy.docx",
+        "keywords": [
+            "30 ימי העבודה הראשונים"
+        ]
+    },
+    {
+        "question": "באילו שעות העובדים צריכים להיות זמינים בזמן העבודה מהבית?",
+        "type": "answerable",
+        "source": "remote-work-policy.docx",
+        "keywords": [
+            "09:00",
+            "17:00"
+        ]
+    },
+    {
+        "question": "עד כמה ימים ממועד ההוצאה צריך להגיש בקשת החזר?",
+        "type": "answerable",
+        "source": "expense-policy.docx",
+        "keywords": [
+            "7 ימים"
+        ]
+    },
+    {
+        "question": "מאיזה סכום הוצאה נדרש אישור מראש של מנהל מחלקה?",
+        "type": "answerable",
+        "source": "expense-policy.docx",
+        "keywords": [
+            "500 ש\"ח"
+        ]
+    },
+    {
+        "question": "מתי מתבצעת הערכת הביצועים הראשונה של עובד חדש?",
+        "type": "answerable",
+        "source": "employee-onboarding.docx",
+        "keywords": [
+            "90 ימי עבודה"
+        ]
+    },
+    {
+        "question": "בתוך כמה זמן יש לדווח על חשד לדליפת מידע?",
+        "type": "answerable",
+        "source": "information-security.docx",
+        "keywords": [
+            "בתוך שעה"
+        ]
+    },
+    {
+        "question": "מה גובה תקציב המתנות השנתי לעובדים?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "כמה ימי חופשה מיוחדים מקבלים עובדים לרגל יום הולדת?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "האם החברה מממנת ארוחות צהריים לעובדים?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "מה גובה השכר החודשי של עובד חדש?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    },
+    {
+        "question": "כמה ימי חופשה מקבלים עובדים שעובדים במשרה חלקית?",
+        "type": "unanswerable",
+        "source": null,
+        "keywords": []
+    }
+]
