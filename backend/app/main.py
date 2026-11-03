@@ -8,6 +8,13 @@ from app.core.config import settings
 from app.models import user, document, chunk, message  # noqa: כדי שהטבלאות יירשמו
 from app.api import auth, documents, chat
 
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+)
+
 with engine.begin() as conn:
     conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
 

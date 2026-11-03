@@ -10,6 +10,11 @@ from app.schemas.chat import AskRequest, AskResponse, MessageOut, Source
 from app.services.llm import answer_from_context
 from app.services.retrieval import search_chunks
 
+import logging
+import time
+
+logger = logging.getLogger(__name__)
+
 router = APIRouter(tags=["chat"])
 
 MIN_SCORE = 0.3  # סף ראשוני, נכוונן אותו בשלב 5
@@ -35,9 +40,16 @@ def ask(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    start = time.perf_counter()
     try:
         chunks = search_chunks(db, current_user.id, data.question)
         relevant = [c for c in chunks if c["score"] >= MIN_SCORE]
+
+        top = chunks[0]["score"] if chunks else 0.0
+        logger.info(
+            "ask user=%s chunks=%d relevant=%d top_score=%.3f",
+            current_user.id, len(chunks), len(relevant), top,
+        )
 
         if relevant:
             answer = answer_from_context(data.question, relevant)
@@ -46,6 +58,7 @@ def ask(
             answer = NOT_FOUND_ANSWER
             sources = []
     except OpenAIError:
+        logger.exception("LLM call failed for user=%s", current_user.id)
         raise HTTPException(status_code=502, detail="LLM service unavailable")
 
     # שומרים רק אחרי שהכול הצליח, כדי שלא יישארו שאלות בלי תשובה
@@ -59,7 +72,9 @@ def ask(
         )
     )
     db.commit()
+    logger.info("ask done user=%s latency=%.2fs", current_user.id, time.perf_counter() - start)
 
+    logger.info("ask user=%s completed in %.3f seconds", current_user.id, time.perf_counter() - start)
     return AskResponse(answer=answer, sources=sources)
 
 
