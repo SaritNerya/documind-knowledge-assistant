@@ -75,11 +75,15 @@ export default function Chat() {
                         {m.sources?.length > 0 && (
                             <div className="sources">
                                 מקורות:
-                                {m.sources.map((s, j) => (
-                                    <span className="source-tag" key={j}>
-                                        {s.filename}, עמוד {s.page}
-                                    </span>
-                                ))}
+                                {m.sources.map((s, j) =>
+                                    s.url ? (
+                                        <a className="source-tag" key={j} href={s.url} target="_blank" rel="noreferrer">
+                                            {s.filename}
+                                        </a>
+                                    ) : (
+                                        <span className="source-tag" key={j}>{s.filename}, עמוד {s.page}</span>
+                                    )
+                                )}
                             </div>
                         )}
                     </div>

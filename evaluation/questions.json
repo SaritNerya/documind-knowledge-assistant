@@ -423,5 +423,52 @@
         "type": "unanswerable",
         "source": null,
         "keywords": []
+    },
+    {
+        "question": "האם יש קשר בין הקבצים?",
+        "type": "meta",
+        "keywords": [
+            [
+                "לא",
+                "אין קשר"
+            ]
+        ]
+    },
+    {
+        "question": "מה שלומך?",
+        "type": "chitchat",
+        "keywords": []
+    },
+    {
+        "question": "האם עובד חדש מקבל פלאפון מתנה?",
+        "type": "answerable",
+        "source": "employee-onboarding.docx",
+        "keywords": [
+            [
+                "לא",
+                "אינו",
+                "לא מופיע"
+            ]
+        ]
+    },
+    {
+        "question": "מה קורה אחרי 30 ימי עבודה?",
+        "type": "answerable",
+        "source": "employee-onboarding.docx",
+        "keywords": [
+            [
+                "משוב"
+            ]
+        ],
+        "history": [
+            {
+                "role": "user",
+                "content": "מה השלבים בתהליך הקליטה?"
+            },
+            {
+                "role": "assistant",
+                "content": "תהליך הקליטה כולל..."
+            }
+        ]
     }
 ]

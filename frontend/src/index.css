@@ -17,7 +17,7 @@ button { cursor: pointer; }
 .bubble.user { background: #dbeafe; align-self: flex-start; }
 .bubble.assistant { background: #f1f1f1; align-self: flex-end; }
 .sources { margin-top: 8px; font-size: 13px; color: #555; }
-.source-tag { display: inline-block; background: #fff; border: 1px solid #ccc; border-radius: 10px; padding: 2px 8px; margin: 4px 4px 0 0; }
+a.source-tag { text-decoration: none; color: #1a56db; }
 .hint { color: #888; }
 .chat-form { display: flex; gap: 8px; margin-top: 8px; }
 .chat-form input { flex: 1; }

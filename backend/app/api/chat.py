@@ -1,3 +1,6 @@
+import logging
+import time
+
 from fastapi import APIRouter, Depends, HTTPException, Response
 from openai import OpenAIError
 from sqlalchemy.orm import Session
@@ -7,31 +10,13 @@ from app.core.database import get_db
 from app.models.message import Message
 from app.models.user import User
 from app.schemas.chat import AskRequest, AskResponse, MessageOut, Source
-from app.services.llm import answer_from_context
-from app.services.retrieval import search_chunks
-
-import logging
-import time
+from app.services.rag import answer_question
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["chat"])
 
-MIN_SCORE = 0.3  # סף ראשוני, נכוונן אותו בשלב 5
-NOT_FOUND_ANSWER = "לא מצאתי מידע על כך במסמכים."
-
-
-def build_sources(relevant: list[dict]) -> list[Source]:
-    """מקורות ייחודיים (מסמך + עמוד), עם הציון הגבוה ביותר לכל אחד."""
-    unique = {}
-    for c in relevant:
-        key = (c["filename"], c["page"])
-        if key not in unique or c["score"] > unique[key]["score"]:
-            unique[key] = c
-    return [
-        Source(filename=c["filename"], page=c["page"], score=round(c["score"], 3))
-        for c in unique.values()
-    ]
+HISTORY_LIMIT = 6  # כמה הודעות אחרונות מועברות למודל
 
 
 @router.post("/ask", response_model=AskResponse)
@@ -41,22 +26,18 @@ def ask(
     current_user: User = Depends(get_current_user),
 ):
     start = time.perf_counter()
+
+    recent = (
+        db.query(Message)
+        .filter(Message.user_id == current_user.id)
+        .order_by(Message.id.desc())
+        .limit(HISTORY_LIMIT)
+        .all()
+    )[::-1]
+    history = [{"role": m.role, "content": m.content} for m in recent]
+
     try:
-        chunks = search_chunks(db, current_user.id, data.question)
-        relevant = [c for c in chunks if c["score"] >= MIN_SCORE]
-
-        top = chunks[0]["score"] if chunks else 0.0
-        logger.info(
-            "ask user=%s chunks=%d relevant=%d top_score=%.3f",
-            current_user.id, len(chunks), len(relevant), top,
-        )
-
-        if relevant:
-            answer = answer_from_context(data.question, relevant)
-            sources = build_sources(relevant)
-        else:
-            answer = NOT_FOUND_ANSWER
-            sources = []
+        result = answer_question(db, current_user.id, data.question, history)
     except OpenAIError:
         logger.exception("LLM call failed for user=%s", current_user.id)
         raise HTTPException(status_code=502, detail="LLM service unavailable")
@@ -67,15 +48,17 @@ def ask(
         Message(
             user_id=current_user.id,
             role="assistant",
-            content=answer,
-            sources=[s.model_dump() for s in sources],
+            content=result.answer,
+            sources=result.sources,
         )
     )
     db.commit()
-    logger.info("ask done user=%s latency=%.2fs", current_user.id, time.perf_counter() - start)
 
-    logger.info("ask user=%s completed in %.3f seconds", current_user.id, time.perf_counter() - start)
-    return AskResponse(answer=answer, sources=sources)
+    logger.info(
+        "ask user=%s found=%s web=%s latency=%.2fs",
+        current_user.id, result.found, result.used_web, time.perf_counter() - start,
+    )
+    return AskResponse(answer=result.answer, sources=[Source(**s) for s in result.sources])
 
 
 @router.get("/messages", response_model=list[MessageOut])
