@@ -10,9 +10,11 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user
 from app.core.database import get_db
+from app.core.config import settings
 from app.models.document import Document
 from app.models.user import User
 from app.schemas.document import DocumentOut
+
 
 router = APIRouter(prefix="/documents", tags=["documents"])
 
@@ -62,6 +64,12 @@ def upload_document(
         db.rollback()
         file_path.unlink(missing_ok=True)
         raise HTTPException(status_code=400, detail="Could not read the file")
+    if file.size and file.size > settings.max_upload_mb * 1024 * 1024:
+        raise HTTPException(status_code=413, detail=f"File too large (max {settings.max_upload_mb} MB)")
+
+    doc_count = db.query(Document).filter(Document.user_id == current_user.id).count()
+    if doc_count >= settings.max_docs_per_user:
+        raise HTTPException(status_code=400, detail="Document limit reached")
 
     if chunk_count == 0:
         db.rollback()

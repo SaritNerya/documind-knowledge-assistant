@@ -12,6 +12,9 @@ from app.models.user import User
 from app.schemas.chat import AskRequest, AskResponse, MessageOut, Source
 from app.services.rag import answer_question
 
+from datetime import datetime, timedelta, timezone
+from app.core.config import settings
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["chat"])
@@ -26,6 +29,16 @@ def ask(
     current_user: User = Depends(get_current_user),
 ):
     start = time.perf_counter()
+
+#limit daily questions
+    since = datetime.now(timezone.utc) - timedelta(hours=24)
+    asked_today = (
+        db.query(Message)
+        .filter(Message.user_id == current_user.id, Message.role == "user", Message.created_at >= since)
+        .count()
+    )
+    if asked_today >= settings.daily_question_limit:
+        raise HTTPException(status_code=429, detail="הגעת למכסת השאלות היומית. נסי שוב מחר.")
 
     recent = (
         db.query(Message)

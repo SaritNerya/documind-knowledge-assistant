@@ -19,6 +19,9 @@ def ingest_document(db: Session, document_id: int, path: Path) -> int:
     if not pieces:
         return 0
 
+    if len(pieces) > 300:
+        raise ValueError("Document too large")
+
     vectors = embed_texts([text for _, text in pieces])
 
     for index, ((page_num, text), vector) in enumerate(zip(pieces, vectors)):
