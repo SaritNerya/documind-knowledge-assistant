@@ -1,0 +1,140 @@
+# Evaluation report: MIN_SCORE=0.5
+
+- MIN_SCORE: 0.5
+- Total questions: 57
+- Answerable: 31
+- Unanswerable: 26
+
+## Retrieval
+- Retrieval Hit Rate before threshold: 100.00%
+- Retrieval Hit Rate after threshold: 54.84%
+- Avg top score (answerable): 0.492
+- Avg top score (unanswerable): 0.445
+- Avg retrieval latency: 0.337s
+- Duplicate chunks removed: 72
+
+## Answer generation
+- Answer Accuracy: 32.26%
+- Refusal Rate: 92.31%
+- Hallucination Rate: 7.69%
+- Review-needed rate: 12.28%
+- Avg answer latency: 1.200s
+
+## Failed questions
+- [answerable] כמה ימי חופשה לכל היותר אפשר לצבור לשנה הבאה?
+  - failure_type: chunk_miss
+  - retrieval_after_threshold: True
+  - chunk_hit: False
+  - answer_status: review_needed
+- [answerable] כמה זמן מראש צריך לבקש חופשה של שלושה ימים?
+  - failure_type: retrieval_miss
+  - retrieval_after_threshold: False
+  - chunk_hit: True
+  - answer_status: incorrect
+- [answerable] מהו פרק הזמן המינימלי להגשת בקשה לחופשה שאורכה ארבעה ימים?
+  - failure_type: retrieval_miss
+  - retrieval_after_threshold: False
+  - chunk_hit: True
+  - answer_status: incorrect
+- [answerable] עד איזו שעה יש לדווח על היעדרות עקב מחלה?
+  - failure_type: retrieval_miss
+  - retrieval_after_threshold: False
+  - chunk_hit: True
+  - answer_status: incorrect
+- [answerable] באיזה מקרה צריך לצרף אישור רפואי למחלה?
+  - failure_type: retrieval_miss
+  - retrieval_after_threshold: False
+  - chunk_hit: False
+  - answer_status: incorrect
+- [answerable] מה מספר ימי העבודה מהבית המקסימלי בשבוע?
+  - failure_type: review_needed
+  - retrieval_after_threshold: True
+  - chunk_hit: True
+  - answer_status: review_needed
+- [answerable] האם עובד חדש רשאי לעבוד מהבית בשבועיים הראשונים?
+  - failure_type: chunk_miss
+  - retrieval_after_threshold: True
+  - chunk_hit: False
+  - answer_status: review_needed
+- [answerable] האם ישיבות צוות מתקיימות גם כאשר העובדים עובדים מהבית?
+  - failure_type: chunk_miss
+  - retrieval_after_threshold: True
+  - chunk_hit: False
+  - answer_status: review_needed
+- [answerable] האם החברה משתתפת ברכישת שולחן או כיסא לעבודה מהבית?
+  - failure_type: retrieval_miss
+  - retrieval_after_threshold: False
+  - chunk_hit: False
+  - answer_status: incorrect
+- [answerable] תוך כמה זמן צריך להגיש בקשה להחזר הוצאות?
+  - failure_type: chunk_miss
+  - retrieval_after_threshold: True
+  - chunk_hit: False
+  - answer_status: review_needed
+- [answerable] מי צריך לאשר מראש הוצאה עסקית בסכום של 650 ש"ח?
+  - failure_type: retrieval_miss
+  - retrieval_after_threshold: False
+  - chunk_hit: False
+  - answer_status: incorrect
+- [answerable] מה מתרחש ביום העבודה הראשון של עובד חדש?
+  - failure_type: chunk_miss
+  - retrieval_after_threshold: True
+  - chunk_hit: False
+  - answer_status: review_needed
+- [answerable] באיזה שלב בתהליך הקליטה מתקיימת הדרכת מערכות ואבטחת מידע?
+  - failure_type: retrieval_miss
+  - retrieval_after_threshold: False
+  - chunk_hit: False
+  - answer_status: incorrect
+- [answerable] מתי מתקיימת שיחת המשוב הראשונה לעובד חדש?
+  - failure_type: review_needed
+  - retrieval_after_threshold: True
+  - chunk_hit: True
+  - answer_status: review_needed
+- [unanswerable] האם אפשר להעביר יותר מעשרה ימי חופשה לשנה הבאה באישור מנהל?
+  - failure_type: hallucination
+  - retrieval_after_threshold: False
+  - chunk_hit: None
+  - answer_status: incorrect_refusal
+- [unanswerable] האם העובדים מקבלים תקציב חודשי לרכישת ציוד משרדי לבית?
+  - failure_type: hallucination
+  - retrieval_after_threshold: False
+  - chunk_hit: None
+  - answer_status: incorrect_refusal
+- [answerable] כמה ימי חופשה מגיעים לי בשנה?
+  - failure_type: retrieval_miss
+  - retrieval_after_threshold: False
+  - chunk_hit: True
+  - answer_status: incorrect
+- [answerable] כמה ימי חופשה ניתן להעביר לשנה העוקבת?
+  - failure_type: retrieval_miss
+  - retrieval_after_threshold: False
+  - chunk_hit: True
+  - answer_status: incorrect
+- [answerable] כמה זמן מראש צריך להגיש בקשה לחופשה של יותר משלושה ימים?
+  - failure_type: retrieval_miss
+  - retrieval_after_threshold: False
+  - chunk_hit: True
+  - answer_status: incorrect
+- [answerable] עד איזו שעה צריך להודיע למנהל על היעדרות עקב מחלה?
+  - failure_type: retrieval_miss
+  - retrieval_after_threshold: False
+  - chunk_hit: True
+  - answer_status: incorrect
+- [answerable] כמה ימים בשבוע מותר לעובד לעבוד מהבית?
+  - failure_type: retrieval_miss
+  - retrieval_after_threshold: False
+  - chunk_hit: True
+  - answer_status: incorrect
+- [answerable] באילו שעות העובדים צריכים להיות זמינים בזמן העבודה מהבית?
+  - failure_type: retrieval_miss
+  - retrieval_after_threshold: False
+  - chunk_hit: True
+  - answer_status: incorrect
+- [answerable] מאיזה סכום הוצאה נדרש אישור מראש של מנהל מחלקה?
+  - failure_type: retrieval_miss
+  - retrieval_after_threshold: False
+  - chunk_hit: True
+  - answer_status: incorrect
+
+Keyword matching is a heuristic signal only; it is not a semantic equivalence check and should be treated as a review signal when uncertain.

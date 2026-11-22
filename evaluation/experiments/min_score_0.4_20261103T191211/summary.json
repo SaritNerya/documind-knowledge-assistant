@@ -1,0 +1,24 @@
+{
+  "min_score": 0.4,
+  "question_counts": {
+    "total": 57,
+    "answerable": 31,
+    "unanswerable": 26
+  },
+  "retrieval": {
+    "hit_rate_before_threshold": 1.0,
+    "hit_rate_after_threshold": 0.8387096774193549,
+    "avg_top_score_answerable": 0.4922258064516129,
+    "avg_top_score_unanswerable": 0.44546153846153846,
+    "avg_retrieval_latency": 0.33708596491228066,
+    "duplicate_chunks_removed": 72
+  },
+  "answer_generation": {
+    "answer_accuracy": 0.5483870967741935,
+    "refusal_rate": 0.8846153846153846,
+    "hallucination_rate": 0.11538461538461539,
+    "review_needed_rate": 0.15789473684210525,
+    "avg_answer_latency": 1.0263318181818182
+  },
+  "heuristic_note": "Keyword matching is a heuristic signal only; it is not a semantic equivalence check and should be treated as a review signal when uncertain."
+}

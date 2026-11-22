@@ -7,3 +7,4 @@ node_modules/
 uploads/
 try_*.py
 docker-compose.override.yml
+evaluation/experiments/*/details.json
