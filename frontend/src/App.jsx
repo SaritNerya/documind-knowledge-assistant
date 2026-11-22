@@ -2,13 +2,14 @@ import { useState } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { getToken, clearToken } from "./api";
 import Login from "./Login";
+import Logo from "./components/Logo";
 import ChatPage from "./ChatPage";
 
 function Workspace({ onLogout }) {
   return (
     <div className="app" dir="rtl">
       <header>
-        <h1>DocuMind</h1>
+        <Logo as="h1" />
         <button type="button" className="btn-ghost" onClick={onLogout}>התנתקות</button>
       </header>
       <ChatPage />

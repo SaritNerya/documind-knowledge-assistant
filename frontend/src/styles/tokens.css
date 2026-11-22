@@ -18,6 +18,13 @@
   --highlight: #F7D774;   /* מרקר זעפרן, רך יותר מצהוב ניאון */
   --field: #FFFFFF;
   --danger: #A8321F;      /* שגיאות */
+  --success: #3E7A52;     /* ירוק מרווה כהה: הצלחה וסיסמה חזקה */
+
+  /* מד חוזק סיסמה: רמות 1-4, מאדום לירוק, מתוך הפלטה הקיימת */
+  --strength-1: var(--danger);
+  --strength-2: var(--wave);
+  --strength-3: var(--highlight);
+  --strength-4: var(--success);
   --wave: #E08A5F;        /* קו גלי: טרקוטה בהירה */
   --scrim: rgba(31, 58, 46, .35); /* רקע כהה מאחורי מגירה בטלפון */
 

@@ -1,4 +1,5 @@
 @import "./styles/tokens.css";
+@import "./styles/forms.css";
 
 /* ===== בסיס ===== */
 *, *::before, *::after { box-sizing: border-box; }
@@ -34,7 +35,14 @@ p { margin: var(--space-2) 0; }
   padding: var(--space-4);
 }
 header { flex: none; display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3); }
-header h1 { margin: 0; }
+header .logo { margin: 0; }
+
+/* ===== לוגו ===== */
+.logo { display: inline-flex; align-items: center; gap: var(--space-2); margin: 0; font-size: 28px; font-weight: 700; }
+.logo-mark { width: 1.4em; height: 1.4em; flex: none; }
+.logo-page { fill: var(--quote-bg); stroke: var(--text); stroke-width: 2; stroke-linejoin: round; }
+.logo-spine { stroke: var(--text); stroke-width: 2; }
+.logo-leaf { fill: var(--accent); }
 .card {
   background: var(--surface);
   border-radius: var(--r-card);
@@ -252,9 +260,11 @@ input[type="file"]::file-selector-button {
 .panel-toggles, .backdrop { display: none; }
 
 /* ===== מסך כניסה ===== */
-.login-box { max-width: 380px; margin: 80px auto; }
-.login-box input, .login-box button[type="submit"] { display: block; width: 100%; }
-.login-box h2 { font-size: 32px; margin-bottom: 0; }
+.auth-page { min-height: 100dvh; display: grid; place-items: center; padding: var(--space-4); }
+.auth-card { width: 100%; max-width: 420px; margin: 0; text-align: center; }
+.auth-card .logo { font-size: 34px; }
+.auth-form { text-align: start; }
+.auth-submit { width: 100%; margin-top: var(--space-2); }
 /* קו גלי תחת ה-tagline. mask שומר את הצבע בטוקן ולא בתוך ה-SVG */
 .tagline { position: relative; display: inline-block; margin: 0 0 var(--space-5); padding-bottom: 10px; color: var(--muted); font-family: var(--font-literary); font-size: 18px; }
 .tagline::after {
