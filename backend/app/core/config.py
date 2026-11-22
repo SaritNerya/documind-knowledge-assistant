@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     web_model: str = "gpt-4o-mini"    # המודל שמבצע חיפוש אינטרנט
     model_config = SettingsConfigDict(env_file=".env")
     invite_code: str = ""            # אם ריק, כל אחד יכול להירשם
+    access_token_expire_minutes: int = 60   # התחברות רגילה
+    remember_me_expire_days: int = 30       # התחברות עם "זכור אותי"
     max_docs_per_conversation: int = 10
     max_docs_per_user: int = 50       # תקרה כללית על פני כל השיחות
     max_upload_mb: int = 5

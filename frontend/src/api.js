@@ -1,8 +1,16 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
-export const getToken = () => localStorage.getItem("token");
-export const setToken = (t) => localStorage.setItem("token", t);
-export const clearToken = () => localStorage.removeItem("token");
+// "זכור אותי": localStorage נשאר גם אחרי סגירת הדפדפן. אחרת sessionStorage, שנמחק בסגירה.
+const TOKEN_KEY = "token";
+export const getToken = () => localStorage.getItem(TOKEN_KEY) ?? sessionStorage.getItem(TOKEN_KEY);
+export function clearToken() {
+  localStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem(TOKEN_KEY);
+}
+function setToken(token, remember) {
+  clearToken();
+  (remember ? localStorage : sessionStorage).setItem(TOKEN_KEY, token);
+}
 
 async function request(path, options = {}) {
   const headers = { ...(options.headers || {}) };
@@ -33,13 +41,13 @@ export function register(email, password, inviteCode) {
   return request("/auth/register", jsonBody("POST", { email, password, invite_code: inviteCode }));
 }
 
-export async function login(email, password) {
+export async function login(email, password, remember = false) {
   // ה-endpoint של login מצפה לנתוני טופס, לא JSON
   const data = await request("/auth/login", {
     method: "POST",
-    body: new URLSearchParams({ username: email, password }),
+    body: new URLSearchParams({ username: email, password, remember: String(remember) }),
   });
-  setToken(data.access_token);
+  setToken(data.access_token, remember);
 }
 
 export const listDocuments = (conversationId) =>

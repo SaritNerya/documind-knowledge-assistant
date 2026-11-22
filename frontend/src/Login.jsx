@@ -19,6 +19,7 @@ export default function Login({ onLogin }) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [remember, setRemember] = useState(false);
 
   const isRegister = mode === "register";
   const errors = validateAuthForm(form, isRegister);
@@ -44,7 +45,7 @@ export default function Login({ onLogin }) {
     setLoading(true);
     try {
       if (isRegister) await register(form.email, form.password, form.inviteCode);
-      await login(form.email, form.password);
+      await login(form.email, form.password, remember);
       onLogin();
     } catch (err) {
       setError(err.message);
@@ -98,6 +99,11 @@ export default function Login({ onLogin }) {
               <TextField label="קוד הזמנה" autoComplete="off" {...bind("inviteCode")} />
             </>
           )}
+
+          <label className="checkbox">
+            <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
+            זכור אותי
+          </label>
 
           {error && <p className="error" role="alert">{error}</p>}
 
