@@ -13,7 +13,7 @@ async function request(path, options = {}) {
 
   if (res.status === 401 && token) {
     clearToken();
-    window.location.reload(); // ה-token פג, חוזרים למסך ההתחברות
+    window.location.href = "/login"; // ה-token פג, חוזרים למסך ההתחברות
   }
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
