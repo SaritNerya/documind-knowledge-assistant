@@ -12,7 +12,10 @@ class Settings(BaseSettings):
     invite_code: str = ""            # אם ריק, כל אחד יכול להירשם
     max_docs_per_user: int = 10
     max_upload_mb: int = 5
-    daily_question_limit: int = 30
+    daily_question_limit: int = 30          # למשתמש, בכל השיחות יחד
+    max_conversations_per_user: int = 50
+    conversation_title_max_length: int = 100  # אורך מקסימלי בשינוי שם
+    auto_title_length: int = 50               # כותרת אוטומטית מהשאלה הראשונה
 
 
 settings = Settings()

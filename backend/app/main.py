@@ -5,8 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.database import Base, engine
 from app.core.config import settings
-from app.models import user, document, chunk, message  # noqa: כדי שהטבלאות יירשמו
-from app.api import auth, documents, chat
+from app.models import user, document, chunk, conversation, message  # noqa: כדי שהטבלאות יירשמו
+from app.api import auth, documents, conversations
 
 import logging
 
@@ -29,7 +29,7 @@ app.add_middleware(
 )
 app.include_router(auth.router)
 app.include_router(documents.router)
-app.include_router(chat.router)
+app.include_router(conversations.router)
 
 @app.get("/health")
 def health():
