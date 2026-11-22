@@ -14,5 +14,7 @@ class Conversation(Base):
         ForeignKey("users.id", ondelete="CASCADE"), index=True
     )
     title: Mapped[str]
+    # True כל עוד המשתמש לא שינה את השם בעצמו, ולכן מותר לקבוע אותו אוטומטית
+    auto_title: Mapped[bool] = mapped_column(server_default="true")
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now())

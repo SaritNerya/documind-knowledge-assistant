@@ -42,12 +42,13 @@ export async function login(email, password) {
   setToken(data.access_token);
 }
 
-export const listDocuments = () => request("/documents");
+export const listDocuments = (conversationId) =>
+  request(`/conversations/${conversationId}/documents`);
 
-export function uploadDocument(file) {
+export function uploadDocument(conversationId, file) {
   const form = new FormData();
   form.append("file", file);
-  return request("/documents", { method: "POST", body: form });
+  return request(`/conversations/${conversationId}/documents`, { method: "POST", body: form });
 }
 
 export const deleteDocument = (id) => request(`/documents/${id}`, { method: "DELETE" });

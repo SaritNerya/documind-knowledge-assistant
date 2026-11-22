@@ -10,4 +10,8 @@ class Document(Base):
     filename: Mapped[str]
     stored_filename: Mapped[str]
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    # כל מסמך שייך לשיחה אחת. החיפוש בשיחה רץ רק על המסמכים שלה.
+    conversation_id: Mapped[int] = mapped_column(
+        ForeignKey("conversations.id", ondelete="CASCADE"), index=True
+    )
     uploaded_at: Mapped[datetime] = mapped_column(server_default=func.now())

@@ -8,12 +8,12 @@ from app.services.embeddings import embed_texts
 
 def search_chunks(
     db: Session,
-    user_id: int,
+    conversation_id: int,
     queries: list[str] | str,
     top_k: int = 5,
     max_results: int = 8,
 ) -> list[dict]:
-    """חיפוש סמנטי במסמכים של המשתמש בלבד, עם כמה שאילתות במקביל.
+    """חיפוש סמנטי במסמכים של השיחה בלבד, עם כמה שאילתות במקביל.
     מאחדת תוצאות, משאירה לכל קטע את הציון הטוב ביותר, ומסירה קטעים זהים."""
     if isinstance(queries, str):
         queries = [queries]
@@ -26,7 +26,7 @@ def search_chunks(
         stmt = (
             select(Chunk.content, Chunk.page, Document.filename, distance.label("distance"))
             .join(Document, Chunk.document_id == Document.id)
-            .where(Document.user_id == user_id)
+            .where(Document.conversation_id == conversation_id)
             .order_by(distance)
             .limit(top_k * 3)  # שולפים יותר, כי אחר כך מסירים כפילויות
         )
@@ -46,14 +46,14 @@ def search_chunks(
 
 
 def get_document_overviews(
-    db: Session, user_id: int, max_docs: int = 20, max_chars: int = 500
+    db: Session, conversation_id: int, max_docs: int = 20, max_chars: int = 500
 ) -> list[dict]:
-    """תחילת כל מסמך של המשתמש. מאפשרת לענות על שאלות על המסמכים עצמם
+    """תחילת כל מסמך בשיחה. מאפשרת לענות על שאלות על המסמכים עצמם
     (שם, נושא, קשר בין מסמכים)."""
     stmt = (
         select(Document.filename, Chunk.content)
         .join(Chunk, Chunk.document_id == Document.id)
-        .where(Document.user_id == user_id, Chunk.chunk_index == 0)
+        .where(Document.conversation_id == conversation_id, Chunk.chunk_index == 0)
         .order_by(Document.filename)
     )
     overviews, seen = [], set()

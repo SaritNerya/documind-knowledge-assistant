@@ -1,6 +1,7 @@
 import logging
 import time
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 from fastapi import HTTPException
 from openai import OpenAIError
@@ -9,6 +10,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.models.conversation import Conversation
+from app.models.document import Document
 from app.models.message import Message
 from app.models.question_usage import QuestionUsage
 from app.services.rag import RagResult, answer_question
@@ -66,15 +68,23 @@ def create_conversation(db: Session, user_id: int) -> Conversation:
 def rename_conversation(db: Session, conversation: Conversation, title: str) -> Conversation:
     # שינוי שם לא מעדכן את updated_at, כדי שהשיחה לא תקפוץ לראש הרשימה
     conversation.title = title
+    conversation.auto_title = False  # שם שהמשתמש בחר לא יוחלף אוטומטית
     db.commit()
     db.refresh(conversation)
     return conversation
 
 
 def delete_conversation(db: Session, conversation: Conversation) -> None:
-    # ההודעות נמחקות במסד הנתונים דרך ON DELETE CASCADE
+    # ההודעות, המסמכים והקטעים נמחקים במסד הנתונים דרך ON DELETE CASCADE.
+    # את הקבצים עצמם מוחקים מהדיסק רק אחרי שהמחיקה במסד הצליחה.
+    stored = [
+        name for (name,) in
+        db.query(Document.stored_filename).filter(Document.conversation_id == conversation.id)
+    ]
     db.delete(conversation)
     db.commit()
+    for name in stored:
+        (Path(settings.upload_dir) / name).unlink(missing_ok=True)
 
 
 def get_messages(db: Session, conversation: Conversation) -> list[Message]:
@@ -113,13 +123,14 @@ def ask_in_conversation(db: Session, conversation: Conversation, question: str) 
     history = [{"role": m.role, "content": m.content} for m in recent]
 
     try:
-        result = answer_question(db, user_id, question, history)
+        result = answer_question(db, conversation.id, question, history)
     except OpenAIError:
         logger.exception("LLM call failed for user=%s", user_id)
         raise HTTPException(status_code=502, detail="LLM service unavailable")
 
     # שומרים רק אחרי שהכול הצליח, כדי שלא יישארו שאלות בלי תשובה
-    if not recent and conversation.title == DEFAULT_TITLE:
+    # השאלה הראשונה קובעת את השם, גם אם קודם נקבע שם זמני משם הקובץ
+    if not recent and conversation.auto_title:
         conversation.title = make_title(question)
     conversation.updated_at = func.now()
     db.add_all([

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, owned_conversation
 from app.core.database import get_db
 from app.models.conversation import Conversation
 from app.models.user import User
@@ -10,15 +10,6 @@ from app.schemas.conversation import ConversationOut, ConversationRename
 from app.services import conversations as service
 
 router = APIRouter(prefix="/conversations", tags=["conversations"])
-
-
-def owned_conversation(
-    conversation_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-) -> Conversation:
-    """תלות משותפת לכל נתיב עם {conversation_id}: מחזירה את השיחה רק אם היא של המשתמש."""
-    return service.get_owned_conversation(db, conversation_id, current_user.id)
 
 
 @router.get("", response_model=list[ConversationOut])

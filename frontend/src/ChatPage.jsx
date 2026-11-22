@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
 import {
   askInConversation,
@@ -28,6 +28,7 @@ export default function ChatPage() {
   const [chat, setChat] = useState({ id: null, messages: [], error: "" });
   const [pendingId, setPendingId] = useState(undefined); // השיחה שממתינה לתשובה. undefined = אין
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const creatingRef = useRef(null);
 
   const sending = pendingId !== undefined;
   // בזמן מעבר מ-/new ל-/c/:id אחרי השליחה הראשונה, ממשיכים להציג את השיחה הממתינה
@@ -87,6 +88,23 @@ export default function ChatPage() {
     navigate(path);
   }
 
+  // שיחה חדשה נוצרת בשרת רק בפעולה הראשונה (הודעה או העלאת מסמך).
+  // creatingRef מונע יצירה כפולה אם שתי הפעולות קורות יחד.
+  function ensureConversation() {
+    if (activeId !== null) return Promise.resolve(activeId);
+    if (!creatingRef.current) {
+      creatingRef.current = createConversation()
+        .then((created) => {
+          navigate(`/c/${created.id}`, { replace: true });
+          return created.id;
+        })
+        .finally(() => {
+          creatingRef.current = null;
+        });
+    }
+    return creatingRef.current;
+  }
+
   async function handleSend(question) {
     const startId = activeId;
     const userMessage = { role: "user", content: question };
@@ -99,13 +117,11 @@ export default function ChatPage() {
 
     let targetId = startId;
     try {
-      // שיחה חדשה נוצרת בשרת רק עכשיו, בשליחה הראשונה
       if (targetId === null) {
-        const created = await createConversation();
-        targetId = created.id;
-        setChat((prev) => ({ ...prev, id: created.id }));
-        setPendingId(created.id);
-        navigate(`/c/${created.id}`, { replace: true });
+        const createdId = await ensureConversation();
+        targetId = createdId;
+        setChat((prev) => ({ ...prev, id: createdId }));
+        setPendingId(createdId);
       }
       const conversationId = targetId;
       const data = await askInConversation(conversationId, question);
@@ -166,7 +182,12 @@ export default function ChatPage() {
         <button type="button" className="sidebar-toggle" onClick={() => setSidebarOpen(true)}>
           ☰ שיחות
         </button>
-        <Documents />
+        <Documents
+          conversationId={activeId}
+          ensureConversation={ensureConversation}
+          onUploaded={refreshConversations}
+          disabled={sending}
+        />
         <ChatWindow
           title={title}
           messages={showChat ? chat.messages : []}

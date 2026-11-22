@@ -25,15 +25,15 @@ class RagResult:
 
 def answer_question(
     db: Session,
-    user_id: int,
+    conversation_id: int,
     question: str,
     history: list[dict],
     allow_web: bool = True,
 ) -> RagResult:
     """כל צינור ה-RAG במקום אחד. משמש גם את ה-endpoint וגם את סקריפט ההערכה."""
     queries = rewrite_queries(question, history)
-    chunks = search_chunks(db, user_id, queries)
-    overviews = get_document_overviews(db, user_id)
+    chunks = search_chunks(db, conversation_id, queries)
+    overviews = get_document_overviews(db, conversation_id)
     result = generate_answer(question, chunks, overviews, history)
 
     answer = result["answer"].strip() or NOT_FOUND_ANSWER
