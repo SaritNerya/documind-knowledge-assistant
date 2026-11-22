@@ -6,3 +6,4 @@ __pycache__/
 node_modules/
 uploads/
 try_*.py
+docker-compose.override.yml
