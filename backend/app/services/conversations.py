@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.models.conversation import Conversation
 from app.models.message import Message
+from app.models.question_usage import QuestionUsage
 from app.services.rag import RagResult, answer_question
 
 logger = logging.getLogger(__name__)
@@ -86,16 +87,11 @@ def get_messages(db: Session, conversation: Conversation) -> list[Message]:
 
 
 def _questions_asked_today(db: Session, user_id: int) -> int:
-    """מכסה יומית למשתמש, על פני כל השיחות שלו."""
+    """מכסה יומית למשתמש, על פני כל השיחות שלו, גם כאלה שנמחקו."""
     since = datetime.now(timezone.utc) - timedelta(hours=24)
     return (
-        db.query(Message)
-        .join(Conversation, Message.conversation_id == Conversation.id)
-        .filter(
-            Conversation.user_id == user_id,
-            Message.role == "user",
-            Message.created_at >= since,
-        )
+        db.query(QuestionUsage)
+        .filter(QuestionUsage.user_id == user_id, QuestionUsage.created_at >= since)
         .count()
     )
 
@@ -127,6 +123,7 @@ def ask_in_conversation(db: Session, conversation: Conversation, question: str) 
         conversation.title = make_title(question)
     conversation.updated_at = func.now()
     db.add_all([
+        QuestionUsage(user_id=user_id),
         Message(conversation_id=conversation.id, role="user", content=question),
         Message(
             conversation_id=conversation.id,

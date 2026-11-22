@@ -1,4 +1,4 @@
-﻿# Stage 1: Build dependencies with local SSL certificates
+# Stage 1: Build dependencies with local SSL certificates
 FROM python:3.12-slim AS builder
 
 WORKDIR /app
@@ -28,6 +28,8 @@ ENV PYTHONUNBUFFERED=1
 
 COPY --from=builder /usr/local /usr/local
 COPY app ./app
+COPY alembic.ini ./
+COPY alembic ./alembic
 
 EXPOSE 8000
 

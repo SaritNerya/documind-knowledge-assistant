@@ -1,11 +1,8 @@
 from fastapi import FastAPI
-from sqlalchemy import text
 
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.database import Base, engine
 from app.core.config import settings
-from app.models import user, document, chunk, conversation, message  # noqa: כדי שהטבלאות יירשמו
 from app.api import auth, documents, conversations
 
 import logging
@@ -15,10 +12,7 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(name)s: %(message)s",
 )
 
-with engine.begin() as conn:
-    conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
-
-Base.metadata.create_all(bind=engine)
+# מבנה המסד מנוהל ב-Alembic (backend/alembic). לפני הפעלה: alembic upgrade head
 
 app = FastAPI(title="DocuMind")
 app.add_middleware(

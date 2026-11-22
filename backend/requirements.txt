@@ -11,3 +11,4 @@ openai
 pypdf
 python-docx
 pgvector
+alembic
