@@ -27,7 +27,7 @@ export default function ChatPage() {
   // ההודעות שמוצגות, יחד עם מזהה השיחה שהן שייכות לה
   const [chat, setChat] = useState({ id: null, messages: [], error: "" });
   const [pendingId, setPendingId] = useState(undefined); // השיחה שממתינה לתשובה. undefined = אין
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [openPanel, setOpenPanel] = useState(null); // בטלפון: "conversations" | "documents" | null
   const creatingRef = useRef(null);
 
   const sending = pendingId !== undefined;
@@ -84,7 +84,7 @@ export default function ChatPage() {
   }, [activeId, chat.id, navigate, refreshConversations]);
 
   function goTo(path) {
-    setSidebarOpen(false);
+    setOpenPanel(null);
     navigate(path);
   }
 
@@ -165,11 +165,11 @@ export default function ChatPage() {
 
   return (
     <div className="workspace">
-      {sidebarOpen && <div className="backdrop" onClick={() => setSidebarOpen(false)} />}
+      {openPanel && <div className="backdrop" onClick={() => setOpenPanel(null)} />}
       <ConversationSidebar
         conversations={conversations}
         activeId={activeId}
-        open={sidebarOpen}
+        open={openPanel === "conversations"}
         loading={listLoading}
         error={listError}
         disabled={sending}
@@ -179,15 +179,15 @@ export default function ChatPage() {
         onDelete={handleDelete}
       />
       <main className="main">
-        <button type="button" className="sidebar-toggle" onClick={() => setSidebarOpen(true)}>
-          ☰ שיחות
-        </button>
-        <Documents
-          conversationId={activeId}
-          ensureConversation={ensureConversation}
-          onUploaded={refreshConversations}
-          disabled={sending}
-        />
+        {/* בטלפון בלבד: פתיחת הפאנלים שבצדדים */}
+        <div className="panel-toggles">
+          <button type="button" className="btn-ghost" onClick={() => setOpenPanel("conversations")}>
+            ☰ שיחות
+          </button>
+          <button type="button" className="btn-ghost" onClick={() => setOpenPanel("documents")}>
+            מסמכים ▤
+          </button>
+        </div>
         <ChatWindow
           title={title}
           messages={showChat ? chat.messages : []}
@@ -198,6 +198,13 @@ export default function ChatPage() {
           onSend={handleSend}
         />
       </main>
+      <Documents
+        conversationId={activeId}
+        open={openPanel === "documents"}
+        ensureConversation={ensureConversation}
+        onUploaded={refreshConversations}
+        disabled={sending}
+      />
     </div>
   );
 }

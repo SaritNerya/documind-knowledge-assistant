@@ -69,7 +69,7 @@ export default function ConversationSidebar({
   conversations, activeId, open, loading, error, disabled, onNew, onSelect, onRename, onDelete,
 }) {
   return (
-    <aside className={`card sidebar${open ? " open" : ""}`}>
+    <aside className={`card side-panel sidebar${open ? " open" : ""}`}>
       <button type="button" className="new-conversation" onClick={onNew} disabled={disabled}>
         + שיחה חדשה
       </button>

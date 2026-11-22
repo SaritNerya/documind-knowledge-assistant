@@ -9,7 +9,7 @@ function Workspace({ onLogout }) {
     <div className="app" dir="rtl">
       <header>
         <h1>DocuMind</h1>
-        <button onClick={onLogout}>התנתקות</button>
+        <button type="button" className="btn-ghost" onClick={onLogout}>התנתקות</button>
       </header>
       <ChatPage />
     </div>

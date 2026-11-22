@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { listDocuments, uploadDocument, deleteDocument } from "./api";
 
 // המסמכים של השיחה הפעילה בלבד. conversationId=null הוא מסך שיחה חדשה (עוד אין מסמכים).
-export default function Documents({ conversationId, ensureConversation, onUploaded, disabled }) {
+export default function Documents({ conversationId, open, ensureConversation, onUploaded, disabled }) {
   // המסמכים והשגיאה נשמרים יחד עם מזהה השיחה שלהם, כדי לא להציג נתונים של שיחה אחרת
   const [state, setState] = useState({ id: null, docs: [], error: "" });
   const [uploading, setUploading] = useState(false);
@@ -54,18 +54,31 @@ export default function Documents({ conversationId, ensureConversation, onUpload
   }
 
   return (
-    <div className="card">
+    <aside className={`card side-panel docs-panel${open ? " open" : ""}`}>
       <h2>המסמכים בשיחה</h2>
       <input type="file" accept=".pdf,.docx" onChange={handleUpload} disabled={uploading || disabled} />
       {uploading && <p>מעלה ומעבד את המסמך, זה עשוי לקחת כמה שניות...</p>}
       {current.error && <p className="error">{current.error}</p>}
       {current.docs.length === 0 && !uploading && <p className="hint">עוד לא הועלו מסמכים לשיחה הזו.</p>}
-      {current.docs.map((d) => (
-        <div className="row" key={d.id}>
-          <span>{d.filename}</span>
-          <button onClick={() => handleDelete(d.id)} disabled={disabled}>מחיקה</button>
-        </div>
-      ))}
-    </div>
+      {current.docs.length > 0 && (
+        <ul className="chip-list" aria-label="מסמכים">
+          {current.docs.map((d) => (
+            <li className="chip" key={d.id}>
+              <span className="bidi">{d.filename}</span>
+              <button
+                type="button"
+                className="chip-remove"
+                onClick={() => handleDelete(d.id)}
+                disabled={disabled}
+                aria-label={`מחיקת ${d.filename}`}
+                title="מחיקה"
+              >
+                ×
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </aside>
   );
 }

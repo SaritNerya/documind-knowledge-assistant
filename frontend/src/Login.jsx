@@ -32,6 +32,7 @@ export default function Login({ onLogin }) {
   return (
     <div className="card login-box" dir="rtl">
       <h2>DocuMind</h2>
+      <p className="tagline">שואלים, והתשובה מגיעה ישר מהמסמכים</p>
 
       <form onSubmit={handleSubmit}>
         <input
@@ -69,6 +70,7 @@ export default function Login({ onLogin }) {
 
       <button
         type="button"
+        className="btn-ghost"
         onClick={() => {
           setIsRegister(!isRegister);
           setError("");
