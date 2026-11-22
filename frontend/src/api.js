@@ -18,17 +18,19 @@ async function request(path, options = {}) {
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     const message = typeof err.detail === "string" ? err.detail : "הנתונים שהוזנו אינם תקינים";
-    throw new Error(message);
+    const error = new Error(message);
+    error.status = res.status; // מאפשר לרכיבים להבחין למשל ב-404
+    throw error;
   }
   return res.status === 204 ? null : res.json();
 }
 
-export async function register(email, password, inviteCode) {
-  return request("/auth/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password, invite_code: inviteCode }),
-  });
+function jsonBody(method, body) {
+  return { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
+}
+
+export function register(email, password, inviteCode) {
+  return request("/auth/register", jsonBody("POST", { email, password, invite_code: inviteCode }));
 }
 
 export async function login(email, password) {
@@ -50,14 +52,12 @@ export function uploadDocument(file) {
 
 export const deleteDocument = (id) => request(`/documents/${id}`, { method: "DELETE" });
 
-export function ask(question) {
-  return request("/ask", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ question }),
-  });
-}
-
-export const getMessages = () => request("/messages");
-export const clearMessages = () => request("/messages", { method: "DELETE" });
+export const listConversations = () => request("/conversations");
+export const createConversation = () => request("/conversations", { method: "POST" });
+export const renameConversation = (id, title) =>
+  request(`/conversations/${id}`, jsonBody("PATCH", { title }));
+export const deleteConversation = (id) => request(`/conversations/${id}`, { method: "DELETE" });
+export const getConversationMessages = (id) => request(`/conversations/${id}/messages`);
+export const askInConversation = (id, question) =>
+  request(`/conversations/${id}/ask`, jsonBody("POST", { question }));
 
