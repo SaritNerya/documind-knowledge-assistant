@@ -69,6 +69,10 @@ export const renameConversation = (id, title) =>
 export const deleteConversation = (id, { onlyIfEmpty = false } = {}) =>
   request(`/conversations/${id}${onlyIfEmpty ? "?if_empty=true" : ""}`, { method: "DELETE" });
 export const getConversationMessages = (id) => request(`/conversations/${id}/messages`);
-export const askInConversation = (id, question) =>
-  request(`/conversations/${id}/ask`, jsonBody("POST", { question }));
+// documentIds: המסמכים שישתתפו בחיפוש. null = כל המסמכים בשיחה (השדה לא נשלח)
+export const askInConversation = (id, question, documentIds = null) =>
+  request(`/conversations/${id}/ask`, jsonBody("POST", {
+    question,
+    ...(documentIds && { document_ids: documentIds }),
+  }));
 

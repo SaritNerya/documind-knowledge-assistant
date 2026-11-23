@@ -223,6 +223,16 @@ input[type="file"]::file-selector-button {
 /* הפעיל: מסגרת accent בעובי 2px (border + קו פנימי), בלי רקע ובלי קפיצה בגודל */
 .chip.is-active { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 .chip-num { color: var(--stamp); font-weight: 700; }
+/* מסמך שהוצא מהחיפוש: מסגרת מקווקוות וטקסט מעומעם (לא opacity, כדי לשמור על ניגודיות AA) */
+.chip.is-off { border-style: dashed; color: var(--muted); }
+.chip-select { display: inline-flex; align-items: center; gap: var(--space-2); min-width: 0; cursor: pointer; }
+.chip-select input { width: 16px; height: 16px; margin: 0; flex: none; accent-color: var(--accent); }
+/* שורת "כל המסמכים": באותו יישור כמו תיבות הסימון שבצ'יפים מתחתיה */
+.docs-summary { display: flex; padding-inline: 11px; margin-top: var(--space-2); }
+.docs-summary-text { display: flex; flex-direction: column; line-height: 1.3; }
+.docs-summary-text .hint { font-size: 13px; }
+.chat-note { flex: none; margin: var(--space-2) 0 0; font-size: 14px; color: var(--muted); }
+.chat-note.is-warning { color: var(--danger); font-weight: 500; }
 .chip-remove { margin: 0; padding: 0 6px; background: none; box-shadow: none; color: var(--muted); font-size: 18px; line-height: 1; }
 
 /* ===== סרגל שיחות ===== */

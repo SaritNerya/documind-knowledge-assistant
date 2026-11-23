@@ -4,7 +4,13 @@ import MessageBubble from "./MessageBubble";
 
 const NEAR_BOTTOM_PX = 120; // הודעה חדשה גוללת אוטומטית רק אם המשתמש כבר קרוב לתחתית
 
-export default function ChatWindow({ title, messages, loading, thinking, sending, error, onSend }) {
+/**
+ * note: הודעה קצרה מעל שורת הקלט (למשל באילו מסמכים יתבצע החיפוש).
+ * blocked: כשהוא true השליחה חסומה וה-note מוצג כאזהרה.
+ */
+export default function ChatWindow({
+  title, messages, loading, thinking, sending, error, note, blocked = false, onSend,
+}) {
   const [question, setQuestion] = useState("");
   const scrollRef = useRef(null);
   const nearBottomRef = useRef(true);
@@ -29,7 +35,7 @@ export default function ChatWindow({ title, messages, loading, thinking, sending
   function handleSubmit(e) {
     e.preventDefault();
     const q = question.trim();
-    if (!q || sending) return;
+    if (!q || sending || blocked) return;
     setQuestion("");
     nearBottomRef.current = true; // מי ששולח שאלה רוצה לראות את התשובה
     onSend(q);
@@ -51,6 +57,7 @@ export default function ChatWindow({ title, messages, loading, thinking, sending
       </div>
 
       {error && <p className="error">{error}</p>}
+      {note && <p className={`chat-note${blocked ? " is-warning" : ""}`} aria-live="polite">{note}</p>}
 
       <form className="chat-form" onSubmit={handleSubmit}>
         <input
@@ -60,7 +67,7 @@ export default function ChatWindow({ title, messages, loading, thinking, sending
           maxLength={2000}
           disabled={sending || loading}
         />
-        <button type="submit" disabled={sending || loading || !question.trim()}>
+        <button type="submit" disabled={sending || loading || blocked || !question.trim()}>
           שליחה
         </button>
       </form>

@@ -11,6 +11,7 @@ import {
 import ChatWindow from "./ChatWindow";
 import ConversationSidebar from "./ConversationSidebar";
 import Documents from "./Documents";
+import useConversationDocuments from "./hooks/useConversationDocuments";
 
 const NEW_TITLE = "שיחה חדשה";
 
@@ -30,6 +31,7 @@ export default function ChatPage() {
   const [openPanel, setOpenPanel] = useState(null); // בטלפון: "conversations" | "documents" | null
   const creatingRef = useRef(null);
   const busyRef = useRef(new Set()); // שיחות עם שאלה או העלאה בתהליך: אסור לנקות אותן
+  const documents = useConversationDocuments(activeId);
   const previousIdRef = useRef(activeId);
 
   const sending = pendingId !== undefined;
@@ -148,7 +150,9 @@ export default function ChatPage() {
         setPendingId(createdId);
       }
       const conversationId = targetId;
-      const data = await whileBusy(conversationId, () => askInConversation(conversationId, question));
+      const data = await whileBusy(conversationId, () =>
+        askInConversation(conversationId, question, documents.searchScope)
+      );
       const answer = { role: "assistant", content: data.answer, sources: data.sources };
       setChat((prev) =>
         prev.id === conversationId ? { ...prev, messages: [...prev.messages, answer] } : prev
@@ -187,6 +191,13 @@ export default function ChatPage() {
   const active = conversations.find((c) => c.id === activeId);
   const title = activeId === null ? NEW_TITLE : active?.title ?? "";
 
+  // הודעה מעל שורת הקלט כשהחיפוש לא רץ על כל המסמכים
+  const scope = documents.searchScope;
+  const noDocumentSelected = scope !== null && scope.length === 0;
+  const scopeNote = noDocumentSelected
+    ? "לא נבחר אף מסמך. סמני לפחות מסמך אחד בחלונית המסמכים."
+    : scope && `החיפוש יתבצע ב-${scope.length} מתוך ${documents.docs.length} המסמכים`;
+
   return (
     <div className="workspace">
       {openPanel && <div className="backdrop" onClick={() => setOpenPanel(null)} />}
@@ -219,10 +230,13 @@ export default function ChatPage() {
           thinking={sending && showChat}
           sending={sending}
           error={showChat ? chat.error : ""}
+          note={scopeNote}
+          blocked={noDocumentSelected}
           onSend={handleSend}
         />
       </main>
       <Documents
+        documents={documents}
         conversationId={activeId}
         open={openPanel === "documents"}
         ensureConversation={ensureConversation}

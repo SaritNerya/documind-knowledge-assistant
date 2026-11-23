@@ -6,14 +6,23 @@ from app.models.document import Document
 from app.services.embeddings import embed_texts
 
 
+def _in_scope(stmt, conversation_id: int, document_ids: list[int] | None):
+    """המסמכים שבהם מחפשים: של השיחה בלבד, ואם נבחרו מסמכים מסוימים, רק הם."""
+    stmt = stmt.where(Document.conversation_id == conversation_id)
+    if document_ids is not None:
+        stmt = stmt.where(Document.id.in_(document_ids))
+    return stmt
+
+
 def search_chunks(
     db: Session,
     conversation_id: int,
     queries: list[str] | str,
     top_k: int = 5,
     max_results: int = 8,
+    document_ids: list[int] | None = None,
 ) -> list[dict]:
-    """חיפוש סמנטי במסמכים של השיחה בלבד, עם כמה שאילתות במקביל.
+    """חיפוש סמנטי במסמכי השיחה (או רק ב-document_ids), עם כמה שאילתות במקביל.
     מאחדת תוצאות, משאירה לכל קטע את הציון הטוב ביותר, ומסירה קטעים זהים."""
     if isinstance(queries, str):
         queries = [queries]
@@ -23,11 +32,14 @@ def search_chunks(
 
     for vector in vectors:
         distance = Chunk.embedding.cosine_distance(vector)
-        stmt = (
+        stmt = _in_scope(
             select(Chunk.content, Chunk.page, Document.filename, distance.label("distance"))
-            .join(Document, Chunk.document_id == Document.id)
-            .where(Document.conversation_id == conversation_id)
-            .order_by(distance)
+            .join(Document, Chunk.document_id == Document.id),
+            conversation_id,
+            document_ids,
+        )
+        stmt = (
+            stmt.order_by(distance)
             .limit(top_k * 3)  # שולפים יותר, כי אחר כך מסירים כפילויות
         )
         for row in db.execute(stmt).all():
@@ -46,16 +58,21 @@ def search_chunks(
 
 
 def get_document_overviews(
-    db: Session, conversation_id: int, max_docs: int = 20, max_chars: int = 500
+    db: Session,
+    conversation_id: int,
+    max_docs: int = 20,
+    max_chars: int = 500,
+    document_ids: list[int] | None = None,
 ) -> list[dict]:
     """תחילת כל מסמך בשיחה. מאפשרת לענות על שאלות על המסמכים עצמם
     (שם, נושא, קשר בין מסמכים)."""
-    stmt = (
+    stmt = _in_scope(
         select(Document.filename, Chunk.content)
         .join(Chunk, Chunk.document_id == Document.id)
-        .where(Document.conversation_id == conversation_id, Chunk.chunk_index == 0)
-        .order_by(Document.filename)
-    )
+        .where(Chunk.chunk_index == 0),
+        conversation_id,
+        document_ids,
+    ).order_by(Document.filename)
     overviews, seen = [], set()
     for filename, content in db.execute(stmt).all():
         if filename in seen:

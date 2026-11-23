@@ -61,5 +61,5 @@ def ask(
     conversation: Conversation = Depends(owned_conversation),
     db: Session = Depends(get_db),
 ):
-    result = service.ask_in_conversation(db, conversation, data.question)
+    result = service.ask_in_conversation(db, conversation, data.question, data.document_ids)
     return AskResponse(answer=result.answer, sources=[Source(**s) for s in result.sources])

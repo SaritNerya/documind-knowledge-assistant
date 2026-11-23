@@ -29,11 +29,13 @@ def answer_question(
     question: str,
     history: list[dict],
     allow_web: bool = True,
+    document_ids: list[int] | None = None,
 ) -> RagResult:
-    """כל צינור ה-RAG במקום אחד. משמש גם את ה-endpoint וגם את סקריפט ההערכה."""
+    """כל צינור ה-RAG במקום אחד. משמש גם את ה-endpoint וגם את סקריפט ההערכה.
+    document_ids: רק המסמכים האלה משתתפים בחיפוש. None = כל המסמכים בשיחה."""
     queries = rewrite_queries(question, history)
-    chunks = search_chunks(db, conversation_id, queries)
-    overviews = get_document_overviews(db, conversation_id)
+    chunks = search_chunks(db, conversation_id, queries, document_ids=document_ids)
+    overviews = get_document_overviews(db, conversation_id, document_ids=document_ids)
     result = generate_answer(question, chunks, overviews, history)
 
     answer = result["answer"].strip() or NOT_FOUND_ANSWER

@@ -18,8 +18,13 @@ def client(db, monkeypatch):
 
     calls = []
 
-    def fake_answer(db, conversation_id, question, history, allow_web=True):
-        calls.append({"conversation_id": conversation_id, "question": question, "history": history})
+    def fake_answer(db, conversation_id, question, history, allow_web=True, document_ids=None):
+        calls.append({
+            "conversation_id": conversation_id,
+            "question": question,
+            "history": history,
+            "document_ids": document_ids,
+        })
         return RagResult(answer=f"תשובה ל: {question}", sources=[], found=True, used_web=False)
 
     monkeypatch.setattr(conversations, "answer_question", fake_answer)
@@ -192,6 +197,47 @@ def test_history_comes_only_from_current_conversation(client, alice):
     assert [m["content"] for m in client.rag_calls[-1]["history"]] == [
         "שאלה בשיחה א", "תשובה ל: שאלה בשיחה א",
     ]
+
+
+def add_documents(db, conversation_id, *names):
+    from app.models.document import Document
+
+    docs = [Document(filename=n, stored_filename=n, user_id=1, conversation_id=conversation_id)
+            for n in names]
+    db.add_all(docs)
+    db.commit()
+    return [d.id for d in docs]
+
+
+def test_ask_searches_only_selected_documents(client, db, alice):
+    cid = new_conversation(client, alice)
+    first, second, _ = add_documents(db, cid, "a.pdf", "b.pdf", "c.pdf")
+
+    res = client.post(f"/conversations/{cid}/ask", headers=alice,
+                      json={"question": "שאלה", "document_ids": [second, first, second]})
+    assert res.status_code == 200
+    assert client.rag_calls[-1]["document_ids"] == [first, second]  # בלי כפילויות, ממוין
+
+    ask(client, alice, cid)  # בלי document_ids: כל המסמכים בשיחה
+    assert client.rag_calls[-1]["document_ids"] is None
+
+
+def test_ask_with_document_from_another_conversation_is_404(client, db, alice):
+    mine = new_conversation(client, alice)
+    other = new_conversation(client, alice)
+    (foreign,) = add_documents(db, other, "x.pdf")
+
+    res = client.post(f"/conversations/{mine}/ask", headers=alice,
+                      json={"question": "שאלה", "document_ids": [foreign]})
+    assert res.status_code == 404
+    assert client.rag_calls == []
+
+
+def test_ask_with_empty_document_selection_is_422(client, alice):
+    cid = new_conversation(client, alice)
+    res = client.post(f"/conversations/{cid}/ask", headers=alice,
+                      json={"question": "שאלה", "document_ids": []})
+    assert res.status_code == 422
 
 
 def test_messages_endpoint_returns_conversation_messages(client, alice):

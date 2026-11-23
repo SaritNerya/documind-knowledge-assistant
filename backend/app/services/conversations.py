@@ -117,12 +117,34 @@ def _questions_asked_today(db: Session, user_id: int) -> int:
     )
 
 
-def ask_in_conversation(db: Session, conversation: Conversation, question: str) -> RagResult:
+def _owned_document_ids(
+    db: Session, conversation: Conversation, document_ids: list[int] | None
+) -> list[int] | None:
+    """מוודא שכל המסמכים שנבחרו שייכים לשיחה. מסמך זר נראה כאילו אינו קיים (404)."""
+    if document_ids is None:
+        return None
+    wanted = set(document_ids)
+    found = {
+        doc_id for (doc_id,) in
+        db.query(Document.id).filter(Document.conversation_id == conversation.id, Document.id.in_(wanted))
+    }
+    if found != wanted:
+        raise HTTPException(status_code=404, detail="Document not found")
+    return sorted(found)
+
+
+def ask_in_conversation(
+    db: Session,
+    conversation: Conversation,
+    question: str,
+    document_ids: list[int] | None = None,
+) -> RagResult:
     start = time.perf_counter()
     user_id = conversation.user_id
 
     if _questions_asked_today(db, user_id) >= settings.daily_question_limit:
         raise HTTPException(status_code=429, detail="הגעת למכסת השאלות היומית. נסי שוב מחר.")
+    document_ids = _owned_document_ids(db, conversation, document_ids)
 
     recent = (
         db.query(Message)
@@ -134,7 +156,7 @@ def ask_in_conversation(db: Session, conversation: Conversation, question: str) 
     history = [{"role": m.role, "content": m.content} for m in recent]
 
     try:
-        result = answer_question(db, conversation.id, question, history)
+        result = answer_question(db, conversation.id, question, history, document_ids=document_ids)
     except OpenAIError:
         logger.exception("LLM call failed for user=%s", user_id)
         raise HTTPException(status_code=502, detail="LLM service unavailable")

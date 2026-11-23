@@ -3,6 +3,8 @@ from pydantic import BaseModel, Field
 
 class AskRequest(BaseModel):
     question: str = Field(min_length=1, max_length=2000)
+    # המסמכים שישתתפו בחיפוש. בלי השדה (None) מחפשים בכל המסמכים בשיחה
+    document_ids: list[int] | None = Field(default=None, min_length=1)
 
 
 class Source(BaseModel):
