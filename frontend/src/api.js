@@ -65,7 +65,9 @@ export const listConversations = () => request("/conversations");
 export const createConversation = () => request("/conversations", { method: "POST" });
 export const renameConversation = (id, title) =>
   request(`/conversations/${id}`, jsonBody("PATCH", { title }));
-export const deleteConversation = (id) => request(`/conversations/${id}`, { method: "DELETE" });
+// onlyIfEmpty: השרת מוחק רק אם אין בשיחה הודעות ומסמכים
+export const deleteConversation = (id, { onlyIfEmpty = false } = {}) =>
+  request(`/conversations/${id}${onlyIfEmpty ? "?if_empty=true" : ""}`, { method: "DELETE" });
 export const getConversationMessages = (id) => request(`/conversations/${id}/messages`);
 export const askInConversation = (id, question) =>
   request(`/conversations/${id}/ask`, jsonBody("POST", { question }));

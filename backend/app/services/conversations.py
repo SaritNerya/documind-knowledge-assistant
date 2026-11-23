@@ -74,7 +74,18 @@ def rename_conversation(db: Session, conversation: Conversation, title: str) -> 
     return conversation
 
 
-def delete_conversation(db: Session, conversation: Conversation) -> None:
+def is_empty(db: Session, conversation: Conversation) -> bool:
+    """שיחה ריקה: אין בה אף הודעה ואף מסמך."""
+    def has(model) -> bool:
+        return db.query(model.id).filter(model.conversation_id == conversation.id).first() is not None
+
+    return not has(Message) and not has(Document)
+
+
+def delete_conversation(db: Session, conversation: Conversation, only_if_empty: bool = False) -> None:
+    """only_if_empty: מוחק רק שיחה ריקה (לניקוי שיחה חדשה שעזבו בלי לכתוב בה). אחרת לא עושה כלום."""
+    if only_if_empty and not is_empty(db, conversation):
+        return
     # ההודעות, המסמכים והקטעים נמחקים במסד הנתונים דרך ON DELETE CASCADE.
     # את הקבצים עצמם מוחקים מהדיסק רק אחרי שהמחיקה במסד הצליחה.
     stored = [

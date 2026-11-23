@@ -29,6 +29,8 @@ export default function ChatPage() {
   const [pendingId, setPendingId] = useState(undefined); // השיחה שממתינה לתשובה. undefined = אין
   const [openPanel, setOpenPanel] = useState(null); // בטלפון: "conversations" | "documents" | null
   const creatingRef = useRef(null);
+  const busyRef = useRef(new Set()); // שיחות עם שאלה או העלאה בתהליך: אסור לנקות אותן
+  const previousIdRef = useRef(activeId);
 
   const sending = pendingId !== undefined;
   // בזמן מעבר מ-/new ל-/c/:id אחרי השליחה הראשונה, ממשיכים להציג את השיחה הממתינה
@@ -83,6 +85,28 @@ export default function ChatPage() {
     };
   }, [activeId, chat.id, navigate, refreshConversations]);
 
+  // כמו בצ'אט אמיתי: שיחה שעזבו בלי לכתוב בה כלום לא נשמרת.
+  // השרת מוחק רק אם השיחה באמת ריקה (בלי הודעות ובלי מסמכים), כך שאין סכנה לאבד תוכן.
+  useEffect(() => {
+    const leftId = previousIdRef.current;
+    previousIdRef.current = activeId;
+    if (leftId === null || leftId === activeId || Number.isNaN(leftId)) return;
+    if (busyRef.current.has(leftId)) return;
+    deleteConversation(leftId, { onlyIfEmpty: true })
+      .then(refreshConversations)
+      .catch(() => {}); // ניקוי שקט: אם נכשל, השיחה פשוט נשארת
+  }, [activeId, refreshConversations]);
+
+  // מריץ פעולה על שיחה ומסמן אותה כ"עסוקה" עד שהפעולה מסתיימת
+  async function whileBusy(conversationId, task) {
+    busyRef.current.add(conversationId);
+    try {
+      return await task();
+    } finally {
+      busyRef.current.delete(conversationId);
+    }
+  }
+
   function goTo(path) {
     setOpenPanel(null);
     navigate(path);
@@ -124,7 +148,7 @@ export default function ChatPage() {
         setPendingId(createdId);
       }
       const conversationId = targetId;
-      const data = await askInConversation(conversationId, question);
+      const data = await whileBusy(conversationId, () => askInConversation(conversationId, question));
       const answer = { role: "assistant", content: data.answer, sources: data.sources };
       setChat((prev) =>
         prev.id === conversationId ? { ...prev, messages: [...prev.messages, answer] } : prev
@@ -202,6 +226,7 @@ export default function ChatPage() {
         conversationId={activeId}
         open={openPanel === "documents"}
         ensureConversation={ensureConversation}
+        whileBusy={whileBusy}
         onUploaded={refreshConversations}
         disabled={sending}
       />

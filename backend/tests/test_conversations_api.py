@@ -101,6 +101,30 @@ def test_delete_removes_messages_documents_and_files(client, db, alice):
     assert not stored.exists()
 
 
+def test_delete_if_empty_removes_only_empty_conversations(client, db, alice):
+    from app.models.document import Document
+
+    empty = new_conversation(client, alice)
+    with_message = new_conversation(client, alice)
+    with_document = new_conversation(client, alice)
+    ask(client, alice, with_message)
+    db.add(Document(filename="a.pdf", stored_filename="a.pdf", user_id=1, conversation_id=with_document))
+    db.commit()
+
+    for cid in (empty, with_message, with_document):
+        res = client.delete(f"/conversations/{cid}?if_empty=true", headers=alice)
+        assert res.status_code == 204
+
+    remaining = {c["id"] for c in client.get("/conversations", headers=alice).json()}
+    assert remaining == {with_message, with_document}
+
+
+def test_delete_if_empty_on_other_users_conversation_is_404(client, alice, bob):
+    cid = new_conversation(client, alice)
+    assert client.delete(f"/conversations/{cid}?if_empty=true", headers=bob).status_code == 404
+    assert len(client.get("/conversations", headers=alice).json()) == 1
+
+
 def test_list_ordered_by_last_activity(client, alice):
     first = new_conversation(client, alice)
     second = new_conversation(client, alice)
