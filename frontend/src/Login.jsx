@@ -12,7 +12,7 @@ const TABS = [
   { id: "register", label: "הרשמה" },
 ];
 const PANEL_ID = "auth-panel";
-const EMPTY_FORM = { email: "", password: "", confirm: "", inviteCode: "" };
+const EMPTY_FORM = { email: "", password: "", confirm: "", inviteCode: "documind2026" };
 
 export default function Login({ onLogin }) {
   const [mode, setMode] = useState("login");
