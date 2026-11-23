@@ -98,7 +98,7 @@ def get_messages(db: Session, conversation: Conversation) -> list[Message]:
     )
 
 
-def _questions_asked_today(db: Session, user_id: int) -> int:
+def questions_asked_today(db: Session, user_id: int) -> int:
     """מכסה יומית למשתמש, על פני כל השיחות שלו, גם כאלה שנמחקו."""
     since = datetime.now(timezone.utc) - timedelta(hours=24)
     return (
@@ -133,7 +133,7 @@ def ask_in_conversation(
     start = time.perf_counter()
     user_id = conversation.user_id
 
-    if _questions_asked_today(db, user_id) >= settings.daily_question_limit:
+    if questions_asked_today(db, user_id) >= settings.daily_question_limit:
         raise HTTPException(status_code=429, detail="הגעת למכסת השאלות היומית. נסי שוב מחר.")
     document_ids = _owned_document_ids(db, conversation, document_ids)
 

@@ -1,28 +1,34 @@
+import { useNavigate } from "react-router-dom";
+import { displayNameOf } from "./account/CurrentUserContext";
 import Avatar from "./components/Avatar";
 import DropdownMenu from "./components/DropdownMenu";
 import useCurrentUser from "./hooks/useCurrentUser";
 
-// פריט שעוד לא מומש: מוצג בתפריט, אבל לא לחיץ
-const COMING_SOON = { disabled: true, badge: "בקרוב" };
-
 /** תפריט המשתמש בכותרת: עיגול עם האות הראשונה, ותפריט נפתח. */
-export default function UserMenu({ onLogout }) {
-  const user = useCurrentUser();
-  const email = user?.email ?? "";
+export default function UserMenu() {
+  const { user, logout } = useCurrentUser();
+  const navigate = useNavigate();
+  const name = displayNameOf(user);
 
-  // כדי לממש פריט: להחליף את COMING_SOON ב-onSelect: () => ...
   const items = [
-    { id: "profile", label: "פרופיל", ...COMING_SOON },
-    { id: "settings", label: "הגדרות", ...COMING_SOON },
-    { id: "quota", label: "מכסה יומית", ...COMING_SOON },
-    { id: "logout", label: "התנתקות", onSelect: onLogout, separatorBefore: true },
+    { id: "profile", label: "פרופיל", onSelect: () => navigate("/profile") },
+    { id: "settings", label: "הגדרות", onSelect: () => navigate("/settings") },
+    { id: "quota", label: "מכסה יומית", onSelect: () => navigate("/quota") },
+    { id: "logout", label: "התנתקות", onSelect: logout, separatorBefore: true },
   ];
+
+  const header = user && (
+    <>
+      <strong className="menu-header-name">{name}</strong>
+      <span className="bidi">{user.email}</span>
+    </>
+  );
 
   return (
     <DropdownMenu
-      label={email ? `תפריט משתמש: ${email}` : "תפריט משתמש"}
-      trigger={<Avatar name={email} />}
-      header={email && <span className="bidi">{email}</span>}
+      label={name ? `תפריט משתמש: ${name}` : "תפריט משתמש"}
+      trigger={<Avatar name={name} />}
+      header={header}
       items={items}
     />
   );

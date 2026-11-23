@@ -4,17 +4,33 @@ export const PASSWORD_MIN_LENGTH = 8; // תואם ל-UserCreate בשרת
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/** שגיאות לשדות שכבר הוקלד בהם משהו. שדה ריק לא מקבל שגיאה, כדי לא "לצעוק" על טופס חדש. */
-export function validateAuthForm({ email, password, confirm }, isRegister) {
+// בכל הפונקציות: שגיאות רק לשדות שכבר הוקלד בהם משהו. שדה ריק לא מקבל שגיאה,
+// כדי לא "לצעוק" על טופס חדש.
+
+/** כללי סיסמה חדשה ואימות שלה. משותף להרשמה ולהחלפת סיסמה. */
+function newPasswordErrors(password, confirm) {
   const errors = {};
+  if (password && password.length < PASSWORD_MIN_LENGTH) {
+    errors.password = `הסיסמה קצרה מדי (לפחות ${PASSWORD_MIN_LENGTH} תווים)`;
+  }
+  if (confirm && confirm !== password) {
+    errors.confirm = "הסיסמאות לא תואמות";
+  }
+  return errors;
+}
+
+export function validateAuthForm({ email, password, confirm }, isRegister) {
+  const errors = isRegister ? newPasswordErrors(password, confirm) : {};
   if (email && !EMAIL_PATTERN.test(email.trim())) {
     errors.email = "האימייל לא תקין";
   }
-  if (isRegister && password && password.length < PASSWORD_MIN_LENGTH) {
-    errors.password = `הסיסמה קצרה מדי (לפחות ${PASSWORD_MIN_LENGTH} תווים)`;
-  }
-  if (isRegister && confirm && confirm !== password) {
-    errors.confirm = "הסיסמאות לא תואמות";
+  return errors;
+}
+
+export function validatePasswordChange({ current, password, confirm }) {
+  const errors = newPasswordErrors(password, confirm);
+  if (!errors.password && current && password && current === password) {
+    errors.password = "הסיסמה החדשה זהה לנוכחית";
   }
   return errors;
 }

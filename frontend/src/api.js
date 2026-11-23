@@ -50,7 +50,18 @@ export async function login(email, password, remember = false) {
   setToken(data.access_token, remember);
 }
 
+// ===== החשבון של המשתמשת המחוברת =====
 export const getCurrentUser = () => request("/auth/me");
+export const updateProfile = (displayName) =>
+  request("/auth/me", jsonBody("PATCH", { display_name: displayName }));
+export const getUsage = () => request("/auth/me/usage");
+export const changePassword = (currentPassword, newPassword) =>
+  request("/auth/me/password", jsonBody("POST", {
+    current_password: currentPassword,
+    new_password: newPassword,
+  }));
+export const deleteAccount = (confirmEmail) =>
+  request("/auth/me", jsonBody("DELETE", { confirm_email: confirmEmail }));
 
 export const listDocuments = (conversationId) =>
   request(`/conversations/${conversationId}/documents`);

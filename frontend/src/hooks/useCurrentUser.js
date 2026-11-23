@@ -1,19 +1,7 @@
-import { useEffect, useState } from "react";
-import { getCurrentUser } from "../api";
+import { useContext } from "react";
+import { CurrentUserContext } from "../account/CurrentUserContext";
 
-/** המשתמש המחובר ({ id, email }), או null עד שהוא נטען. */
+/** { user, setUser, logout } של המשתמשת המחוברת. חייב לרוץ בתוך CurrentUserProvider. */
 export default function useCurrentUser() {
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    getCurrentUser()
-      .then((data) => !cancelled && setUser(data))
-      .catch(() => {}); // 401 כבר מטופל ב-api.js (מעבר למסך הכניסה); בשאר המקרים נשאר null
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  return user;
+  return useContext(CurrentUserContext);
 }

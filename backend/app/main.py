@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.api import auth, documents, conversations
+from app.api import account, auth, documents, conversations
 
 import logging
 
@@ -22,6 +22,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(auth.router)
+app.include_router(account.router)
 app.include_router(documents.router)
 app.include_router(conversations.router)
 

@@ -1,0 +1,54 @@
+/* עמודי תוכן (Page.jsx): פרופיל, הגדרות, מכסה יומית. כל הערכים מ-tokens.css. */
+
+/* ===== שלד העמוד: גולל בעצמו, כמו אזור ההודעות בצ'אט ===== */
+.page {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.page-inner { max-width: 640px; margin: 0 auto; padding-bottom: var(--space-5); }
+.page-back {
+  display: inline-block;
+  margin-bottom: var(--space-3);
+  color: var(--accent-text);
+  text-decoration: none;
+  font-size: 15px;
+}
+.page-back:hover { text-decoration: underline; text-underline-offset: 3px; }
+.page-title { font-size: 30px; margin-bottom: var(--space-1); }
+.page-subtitle { margin: 0 0 var(--space-5); color: var(--muted); }
+.page-section h3 { margin: 0 0 var(--space-4); font-size: 19px; }
+
+/* ===== פרופיל ===== */
+.inline-form { margin-bottom: var(--space-4); }
+.inline-form .field { margin-bottom: var(--space-2); }
+.details { display: grid; gap: var(--space-3); margin: 0; padding-top: var(--space-4); border-top: 1px dashed var(--line); }
+.details > div { display: flex; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; }
+.details dt { color: var(--muted); }
+.details dd { margin: 0; font-weight: 500; }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--space-3); }
+
+/* ===== מכסה יומית ===== */
+.quota-card { text-align: center; }
+.quota-headline { margin: 0 0 var(--space-4); font-size: 20px; }
+.quota-number {
+  display: inline-block;
+  margin-inline: 4px;
+  font-family: var(--font-display);
+  font-size: 44px;
+  line-height: 1;
+  color: var(--accent-text);
+  vertical-align: -6px;
+}
+.quota-card .hint { margin-top: var(--space-3); }
+
+/* ===== אזור סכנה: מחיקת חשבון ===== */
+.danger-zone { border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent); }
+.danger-zone h3 { color: var(--danger); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .quota-number { animation: number-bounce .6s cubic-bezier(.34, 1.56, .64, 1) backwards; }
+  @keyframes number-bounce { from { opacity: 0; scale: .4; } }
+}

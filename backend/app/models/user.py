@@ -9,4 +9,5 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(unique=True, index=True)
     hashed_password: Mapped[str]
+    display_name: Mapped[str | None]  # None: הפרונט מציג את תחילת האימייל
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())

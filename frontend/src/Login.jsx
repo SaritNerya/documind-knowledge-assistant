@@ -5,6 +5,7 @@ import PasswordField from "./components/PasswordField";
 import PasswordStrength from "./components/PasswordStrength";
 import Tabs from "./components/Tabs";
 import TextField from "./components/TextField";
+import useFormFields from "./hooks/useFormFields";
 import { validateAuthForm } from "./validation";
 
 const TABS = [
@@ -16,7 +17,7 @@ const EMPTY_FORM = { email: "", password: "", confirm: "", inviteCode: "documind
 
 export default function Login({ onLogin }) {
   const [mode, setMode] = useState("login");
-  const [form, setForm] = useState(EMPTY_FORM);
+  const { values: form, bind, setValues: setForm } = useFormFields(EMPTY_FORM);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [remember, setRemember] = useState(false);
@@ -25,12 +26,6 @@ export default function Login({ onLogin }) {
   const errors = validateAuthForm(form, isRegister);
   const requiredFilled = form.email && form.password && (!isRegister || (form.confirm && form.inviteCode));
   const canSubmit = !loading && requiredFilled && Object.keys(errors).length === 0;
-
-  // מחזיר value ו-onChange לשדה, כדי לא לחזור על אותו קוד בכל שדה
-  const bind = (name) => ({
-    value: form[name],
-    onChange: (e) => setForm((prev) => ({ ...prev, [name]: e.target.value })),
-  });
 
   function switchMode(next) {
     setMode(next);
