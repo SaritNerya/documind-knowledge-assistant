@@ -1,5 +1,6 @@
 import { useId, useState } from "react";
 import SourceNotes from "./SourceNotes";
+import CopyButton from "./components/CopyButton";
 
 // תשובה שנשענת על מסמכים: יש מקורות, ולאף אחד מהם אין url (מקורות מהרשת תמיד עם url).
 // שיחת חולין ותשובה בלי מידע חוזרות בלי מקורות, ולכן גם הן בלי חותמת.
@@ -62,6 +63,12 @@ export default function Answer({ content, sources = [], thinking = false }) {
           />
         ))}
       </p>
+      {!thinking && (
+        <div className="answer-actions">
+          {/* content הוא טקסט התשובה בלבד: המקורות ומספרי ההערות לא נכללים בו */}
+          <CopyButton text={content} label="העתקת התשובה" />
+        </div>
+      )}
       {sources.length > 0 && (
         <SourceNotes sources={sources} openIndex={openIndex} onToggle={toggle} quoteIdOf={quoteIdOf} />
       )}

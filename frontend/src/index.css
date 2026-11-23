@@ -83,6 +83,21 @@ button {
 }
 button:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
 button:disabled { opacity: .55; cursor: default; }
+/* כפתור אייקון קטן ועגול: שקוף, ומקבל רקע עדין במעבר עכבר */
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 6px;
+  background: transparent;
+  color: var(--muted);
+  box-shadow: none;
+  font-size: 13px;
+  line-height: 1;
+}
+.icon-button:hover { background: var(--quote-bg); color: var(--text); }
+.icon-button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .btn-ghost { background: transparent; color: var(--accent-text); box-shadow: none; text-decoration: underline; text-underline-offset: 3px; }
 
 /* ===== שדות ===== */
@@ -173,6 +188,12 @@ input:focus-visible { outline: var(--focus-ring); outline-offset: 1px; border-co
   overflow-wrap: anywhere;
 }
 .answer.is-thinking .answer-text { color: var(--muted); }
+/* שורת פעולות מיד אחרי טקסט התשובה ומעל המקורות (כרגע: העתקה), בצד שבו הטקסט נגמר */
+.answer-actions { display: flex; justify-content: flex-end; margin-top: var(--space-1); }
+.answer-actions + .source-notes { margin-top: var(--space-2); }
+.copy-button.is-copied { color: var(--success); }
+.copy-button.is-failed { color: var(--danger); }
+.copy-status:empty { display: none; }
 
 /* ===== הערות שוליים וציטוט ===== */
 .footnote-ref { color: var(--stamp); font: 700 .72em var(--font-ui); margin-inline-start: 2px; }
