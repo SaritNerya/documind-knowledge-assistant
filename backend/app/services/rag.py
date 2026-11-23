@@ -5,6 +5,7 @@ from openai import OpenAIError
 from sqlalchemy.orm import Session
 
 from app.services.llm import answer_from_web, generate_answer, rewrite_queries
+from app.services.quotes import best_sentence
 from app.services.retrieval import get_document_overviews, search_chunks
 
 logger = logging.getLogger(__name__)
@@ -54,6 +55,9 @@ def answer_question(
                     "page": c["page"],
                     "score": round(c["score"], 3),
                     "url": None,
+                    # הקטע המדויק מהמסמך, והמשפט בו שהכי קרוב לתשובה (להדגשה בממשק)
+                    "quote": c["content"].strip(),
+                    "highlight": best_sentence(c["content"], answer),
                 }
         sources = list(unique.values())
 

@@ -165,6 +165,11 @@ input[type="file"]::file-selector-button {
   line-height: var(--answer-leading);
 }
 .quote p { margin: 0 0 var(--space-2); }
+/* קטע המקור יכול להיות ארוך: גלילה פנימית קצרה, והמשפט המסומן נגלל לתצוגה בפתיחה */
+.quote-text { max-height: 14em; overflow-y: auto; overscroll-behavior: contain; white-space: pre-wrap; }
+/* מספר הערה לחיץ: נראה כמו מספר מוגבה, לא ככפתור גלולה */
+.footnote-button { margin: 0; padding: 0 2px; background: none; box-shadow: none; border-radius: 4px; color: var(--stamp); font: inherit; cursor: pointer; }
+.footnote-button:hover, .footnote-button[aria-expanded="true"] { background: var(--highlight); }
 .quote mark { background: var(--highlight); color: var(--text); padding: 0 2px; border-radius: 4px; }
 .quote-cite { font: 400 14px var(--font-ui); color: var(--muted); }
 .quote-cite cite { font-style: normal; font-weight: 500; color: var(--text); }

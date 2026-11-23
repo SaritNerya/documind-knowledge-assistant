@@ -1,13 +1,25 @@
-import { useId, useState } from "react";
+import { useEffect, useRef } from "react";
+import HighlightedText from "./components/HighlightedText";
 
-// כרטיס הציטוט. quote יגיע מהשרת בעתיד; בינתיים מוצגים רק המסמך והעמוד.
+/**
+ * כרטיס הציטוט: הקטע המדויק מהמסמך, והמשפט הרלוונטי מסומן במרקר.
+ * בפתיחה גוללים את המשפט המסומן לתוך התצוגה (הקטע עצמו יכול להיות ארוך).
+ */
 function QuoteCard({ id, number, source }) {
+  const markRef = useRef(null);
+
+  useEffect(() => {
+    markRef.current?.scrollIntoView({ block: "nearest" });
+  }, [source]);
+
   return (
     <blockquote className="quote" id={id}>
-      {source.quote && (
-        <p>
-          <mark>{source.quote}</mark>
+      {source.quote ? (
+        <p className="quote-text">
+          <HighlightedText markRef={markRef} text={source.quote} highlight={source.highlight} />
         </p>
+      ) : (
+        <p className="hint">הקטע המדויק נשמר רק בתשובות חדשות.</p>
       )}
       <footer className="quote-cite">
         <span className="footnote-ref">{number}</span> מתוך{" "}
@@ -17,12 +29,11 @@ function QuoteCard({ id, number, source }) {
   );
 }
 
-// המקורות כהערות שוליים: צ'יפ לכל מקור. מקור ממסמך פותח וסוגר ציטוט, מקור מהרשת הוא קישור.
-export default function SourceNotes({ sources }) {
-  const [openIndex, setOpenIndex] = useState(null);
-  const baseId = useId();
-  const quoteId = (i) => `${baseId}-quote-${i}`;
-
+/**
+ * המקורות כהערות שוליים: צ'יפ לכל מקור. מקור ממסמך פותח וסוגר את הציטוט, מקור מהרשת הוא קישור.
+ * המקור הפתוח מנוהל ב-Answer, כי גם מספרי ההערות שבתוך התשובה פותחים אותו.
+ */
+export default function SourceNotes({ sources, openIndex, onToggle, quoteIdOf }) {
   return (
     <div className="source-notes">
       <ul className="chip-list" aria-label="מקורות">
@@ -38,8 +49,8 @@ export default function SourceNotes({ sources }) {
                 type="button"
                 className={`chip${openIndex === i ? " is-active" : ""}`}
                 aria-expanded={openIndex === i}
-                aria-controls={openIndex === i ? quoteId(i) : undefined}
-                onClick={() => setOpenIndex(openIndex === i ? null : i)}
+                aria-controls={openIndex === i ? quoteIdOf(i) : undefined}
+                onClick={() => onToggle(i)}
               >
                 <span className="chip-num">{i + 1}</span>
                 <span className="bidi">{s.filename}</span>
@@ -50,7 +61,7 @@ export default function SourceNotes({ sources }) {
         ))}
       </ul>
       {openIndex !== null && (
-        <QuoteCard id={quoteId(openIndex)} number={openIndex + 1} source={sources[openIndex]} />
+        <QuoteCard id={quoteIdOf(openIndex)} number={openIndex + 1} source={sources[openIndex]} />
       )}
     </div>
   );

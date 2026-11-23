@@ -12,6 +12,8 @@ class Source(BaseModel):
     page: int = 0
     score: float = 0.0
     url: str | None = None   # רק למקורות מהאינטרנט
+    quote: str | None = None      # הקטע המדויק מהמסמך (תשובות ישנות: אין)
+    highlight: str | None = None  # משפט מתוך quote להדגשה
 
 
 class AskResponse(BaseModel):

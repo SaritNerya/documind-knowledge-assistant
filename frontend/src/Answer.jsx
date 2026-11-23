@@ -1,3 +1,4 @@
+import { useId, useState } from "react";
 import SourceNotes from "./SourceNotes";
 
 // תשובה שנשענת על מסמכים: יש מקורות, ולאף אחד מהם אין url (מקורות מהרשת תמיד עם url).
@@ -10,7 +11,31 @@ function verifiedAgainst(sources) {
   return names.length > 1 ? `${names[0]} ועוד ${names.length - 1}` : names[0];
 }
 
+/** מספר הערה בתוך התשובה. במקור ממסמך הוא כפתור שפותח את הציטוט */
+function FootnoteRef({ index, source, open, controls, onToggle }) {
+  if (source.url) return <sup className="footnote-ref">{index + 1}</sup>;
+  return (
+    <sup>
+      <button
+        type="button"
+        className="footnote-ref footnote-button"
+        aria-label={`מקור ${index + 1}: ${source.filename}, עמוד ${source.page}`}
+        aria-expanded={open}
+        aria-controls={open ? controls : undefined}
+        onClick={() => onToggle(index)}
+      >
+        {index + 1}
+      </button>
+    </sup>
+  );
+}
+
 export default function Answer({ content, sources = [], thinking = false }) {
+  const [openIndex, setOpenIndex] = useState(null);
+  const baseId = useId();
+  // מזהה כרטיס הציטוט: משותף לצ'יפים ולמספרי ההערות, בשביל aria-controls
+  const quoteIdOf = (i) => `${baseId}-quote-${i}`;
+  const toggle = (i) => setOpenIndex((current) => (current === i ? null : i));
   const verified = isDocumentBacked(sources);
   const className = ["answer", verified && "is-verified", thinking && "is-thinking"]
     .filter(Boolean)
@@ -26,11 +51,20 @@ export default function Answer({ content, sources = [], thinking = false }) {
       )}
       <p className="answer-text">
         {content}
-        {sources.map((_, i) => (
-          <sup key={i} className="footnote-ref">{i + 1}</sup>
+        {sources.map((s, i) => (
+          <FootnoteRef
+            key={i}
+            index={i}
+            source={s}
+            open={openIndex === i}
+            controls={quoteIdOf(i)}
+            onToggle={toggle}
+          />
         ))}
       </p>
-      {sources.length > 0 && <SourceNotes sources={sources} />}
+      {sources.length > 0 && (
+        <SourceNotes sources={sources} openIndex={openIndex} onToggle={toggle} quoteIdOf={quoteIdOf} />
+      )}
     </article>
   );
 }
