@@ -64,7 +64,7 @@ export default function Answer({ content, sources = [], thinking = false }) {
         ))}
       </p>
       {!thinking && (
-        <div className="answer-actions">
+        <div className="message-actions">
           {/* content הוא טקסט התשובה בלבד: המקורות ומספרי ההערות לא נכללים בו */}
           <CopyButton text={content} label="העתקת התשובה" />
         </div>
