@@ -1,3 +1,5 @@
+import { NETWORK_ERROR, friendlyError } from "./errors";
+
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
 // "זכור אותי": localStorage נשאר גם אחרי סגירת הדפדפן. אחרת sessionStorage, שנמחק בסגירה.
@@ -17,20 +19,30 @@ async function request(path, options = {}) {
   const token = getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(`${API_URL}${path}`, { ...options, headers });
+  let res;
+  try {
+    res = await fetch(`${API_URL}${path}`, { ...options, headers });
+  } catch {
+    // fetch נכשל לפני שהגיעה תשובה: אין רשת, השרת לא זמין, או שהדפדפן חסם (CORS)
+    throw apiError(0, NETWORK_ERROR);
+  }
 
   if (res.status === 401 && token) {
     clearToken();
     window.location.href = "/login"; // ה-token פג, חוזרים למסך ההתחברות
   }
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    const message = typeof err.detail === "string" ? err.detail : "הנתונים שהוזנו אינם תקינים";
-    const error = new Error(message);
-    error.status = res.status; // מאפשר לרכיבים להבחין למשל ב-404
-    throw error;
+    const body = await res.json().catch(() => ({}));
+    throw apiError(res.status, friendlyError(res.status, body.detail));
   }
   return res.status === 204 ? null : res.json();
+}
+
+/** שגיאה עם הודעה ברורה, ו-status כדי שרכיבים יוכלו להבחין למשל ב-404 (0 = אין חיבור) */
+function apiError(status, message) {
+  const error = new Error(message);
+  error.status = status;
+  return error;
 }
 
 function jsonBody(method, body) {
