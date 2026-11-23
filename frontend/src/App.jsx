@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { Link, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { getToken, clearToken } from "./api";
 import Login from "./Login";
 import Logo from "./components/Logo";
@@ -9,7 +9,12 @@ function Workspace({ onLogout }) {
   return (
     <div className="app" dir="rtl">
       <header>
-        <Logo as="h1" />
+        <h1 className="site-title">
+          {/* לחיצה על הלוגו פותחת שיחה חדשה */}
+          <Link to="/new" className="logo-link" aria-label="DocuMind, שיחה חדשה" title="שיחה חדשה">
+            <Logo />
+          </Link>
+        </h1>
         <button type="button" className="btn-ghost" onClick={onLogout}>התנתקות</button>
       </header>
       <ChatPage />

@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { listDocuments, uploadDocument, deleteDocument } from "./api";
 
 // המסמכים של השיחה הפעילה בלבד. conversationId=null הוא מסך שיחה חדשה (עוד אין מסמכים).
-export default function Documents({ conversationId, open, ensureConversation, onUploaded, disabled }) {
+export default function Documents({
+  conversationId, open, ensureConversation, whileBusy, onUploaded, disabled,
+}) {
   // המסמכים והשגיאה נשמרים יחד עם מזהה השיחה שלהם, כדי לא להציג נתונים של שיחה אחרת
   const [state, setState] = useState({ id: null, docs: [], error: "" });
   const [uploading, setUploading] = useState(false);
@@ -32,7 +34,7 @@ export default function Documents({ conversationId, open, ensureConversation, on
     let id = conversationId;
     try {
       id = await ensureConversation(); // בשיחה חדשה: ההעלאה יוצרת את השיחה
-      await uploadDocument(id, file);
+      await whileBusy(id, () => uploadDocument(id, file)); // השיחה לא תנוקה באמצע ההעלאה
       await reload(id);
       onUploaded();
     } catch (err) {

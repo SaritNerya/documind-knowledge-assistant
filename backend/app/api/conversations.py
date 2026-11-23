@@ -47,10 +47,11 @@ def rename_conversation(
 
 @router.delete("/{conversation_id}", status_code=204)
 def delete_conversation(
+    if_empty: bool = False,  # ?if_empty=true: מחיקה רק אם אין בשיחה הודעות ומסמכים
     conversation: Conversation = Depends(owned_conversation),
     db: Session = Depends(get_db),
 ):
-    service.delete_conversation(db, conversation)
+    service.delete_conversation(db, conversation, only_if_empty=if_empty)
     return Response(status_code=204)
 
 
