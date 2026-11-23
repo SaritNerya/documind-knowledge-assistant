@@ -5,7 +5,9 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.core.database import get_db
 from app.core.security import ALGORITHM
+from app.models.conversation import Conversation
 from app.models.user import User
+from app.services.conversations import get_owned_conversation
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
@@ -30,3 +32,12 @@ def get_current_user(
     if user is None:
         raise credentials_error
     return user
+
+
+def owned_conversation(
+    conversation_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> Conversation:
+    """תלות משותפת לכל נתיב עם {conversation_id}: מחזירה את השיחה רק אם היא של המשתמש."""
+    return get_owned_conversation(db, conversation_id, current_user.id)

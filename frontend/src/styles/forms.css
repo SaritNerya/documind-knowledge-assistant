@@ -1,0 +1,54 @@
+/* רכיבי טופס גנריים: TextField, PasswordField, PasswordStrength, Tabs, תיבת סימון.
+   כל הערכים מגיעים מ-tokens.css. */
+
+/* ===== שדה עם תווית ===== */
+.field { display: flex; flex-direction: column; gap: var(--space-1); margin-bottom: var(--space-3); }
+.field label { font-size: 15px; font-weight: 500; }
+.field-control { position: relative; display: flex; }
+.field-control input { flex: 1; margin: 0; }
+/* מקום לכפתור שבתוך השדה, בצד שבו הטקסט נגמר */
+.field.has-adornment input { padding-inline-end: 44px; }
+.field-adornment {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: var(--space-1);
+  display: grid;
+  place-items: center;
+  margin: auto 0;
+  padding: var(--space-1);
+  height: 36px;
+  width: 36px;
+  border-radius: var(--r-field);
+  background: none;
+  box-shadow: none;
+  color: var(--muted);
+}
+.field-adornment:hover { color: var(--text); }
+.field.has-error input { border-color: var(--danger); }
+.field-error, .field-hint { margin: 0; font-size: 14px; }
+.field-error { color: var(--danger); }
+.field-hint { color: var(--muted); }
+
+/* ===== מד חוזק סיסמה: 4 מקטעים, הצבע לפי data-level ===== */
+.strength { display: flex; align-items: center; gap: var(--space-2); }
+.strength-bar { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-1); }
+.strength-bar span { height: 6px; border-radius: var(--r-btn); background: var(--line); }
+.strength[data-level="0"] .strength-bar span:first-child,
+.strength[data-level="1"] .is-filled { background: var(--strength-1); }
+.strength[data-level="2"] .is-filled { background: var(--strength-2); }
+.strength[data-level="3"] .is-filled { background: var(--strength-3); }
+.strength[data-level="4"] .is-filled { background: var(--strength-4); }
+.strength-label { min-width: 5.5em; font-size: 14px; color: var(--muted); text-align: end; }
+
+/* ===== לשוניות ===== */
+.tabs { display: flex; gap: var(--space-1); padding: var(--space-1); margin-bottom: var(--space-4); background: var(--bg); border-radius: var(--r-btn); }
+.tab { flex: 1; margin: 0; background: none; box-shadow: none; color: var(--muted); }
+.tab.is-selected { background: var(--surface); color: var(--text); font-weight: 700; box-shadow: var(--shadow-card); }
+
+/* ===== תיבת סימון ===== */
+.checkbox { display: inline-flex; align-items: center; gap: var(--space-2); cursor: pointer; }
+.checkbox input { width: 18px; height: 18px; margin: 0; accent-color: var(--accent); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .strength-bar span, .tab { transition: background-color .2s, color .2s; }
+}

@@ -10,8 +10,9 @@ class Message(Base):
     __tablename__ = "messages"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    # הבעלות על ההודעה נקבעת דרך השיחה (conversations.user_id)
+    conversation_id: Mapped[int] = mapped_column(
+        ForeignKey("conversations.id", ondelete="CASCADE"), index=True
     )
     role: Mapped[str]  # "user" או "assistant"
     content: Mapped[str]

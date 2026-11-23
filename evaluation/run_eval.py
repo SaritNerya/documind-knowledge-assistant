@@ -9,7 +9,8 @@ sys.path.insert(0, str(BACKEND))
 from app.core.database import SessionLocal
 from app.services.rag import answer_question
 
-USER_ID = 1  # המשתמש שהעלה את המסמכים
+# השיחה שבה נמצאים מסמכי ההערכה. אחרי ההגירה: "שיחה קודמת" של המשתמש שהעלה אותם
+CONVERSATION_ID = 1
 HERE = Path(__file__).parent
 
 
@@ -34,7 +35,7 @@ def main():
     for q in questions:
         start = time.perf_counter()
         # בהערכה בלי חיפוש אינטרנט, כדי למדוד רק את המסמכים
-        r = answer_question(db, USER_ID, q["question"], q.get("history", []), allow_web=False)
+        r = answer_question(db, CONVERSATION_ID, q["question"], q.get("history", []), allow_web=False)
         elapsed = time.perf_counter() - start
 
         groups = keyword_groups(q)

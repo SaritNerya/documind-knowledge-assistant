@@ -1,0 +1,59 @@
+/* טוקנים של העיצוב: "מחברת בוטנית + חדר קריאה".
+   כל צבע, גופן, עיגול וצל באתר מגיע מכאן. רכיבים לא מגדירים ערכים קבועים משלהם. */
+:root {
+  /* צבעים */
+  /* פלטה חמה אחת סביב הטרקוטה: נייר, דיו ירוק-כהה, חול ומרווה.
+     ניגודיות (WCAG AA): text על bg ≈ 11:1, muted על bg ≈ 5.2:1,
+     accent-ink על accent ≈ 4.6:1, stamp על surface ≈ 8:1 */
+  --bg: #FBF4E8;          /* נייר חם */
+  --surface: #FFFDF8;
+  --text: #1F3A2E;        /* דיו ירוק-כהה */
+  --muted: #5E6A5F;
+  --accent: #C2542D;      /* טרקוטה */
+  --accent-ink: #FFFFFF;  /* טקסט על accent */
+  --accent-text: #A9472A; /* טרקוטה כטקסט על רקע בהיר (≈5.3:1). accent עצמו שם רק 4.5 */
+  --stamp: #8B2E3C;       /* דיו בורדו: חותמת והערות שוליים. קרוב לטרקוטה ולא מתחרה בה */
+  --line: #E6D6BE;        /* חול */
+  --quote-bg: #EAF0E1;    /* מרווה בהירה: ציטוטים ושיחה פעילה */
+  --highlight: #F7D774;   /* מרקר זעפרן, רך יותר מצהוב ניאון */
+  --field: #FFFFFF;
+  --danger: #A8321F;      /* שגיאות */
+  --success: #3E7A52;     /* ירוק מרווה כהה: הצלחה וסיסמה חזקה */
+
+  /* מד חוזק סיסמה: רמות 1-4, מאדום לירוק, מתוך הפלטה הקיימת */
+  --strength-1: var(--danger);
+  --strength-2: var(--wave);
+  --strength-3: var(--highlight);
+  --strength-4: var(--success);
+  --wave: #E08A5F;        /* קו גלי: טרקוטה בהירה */
+  --scrim: rgba(31, 58, 46, .35); /* רקע כהה מאחורי מגירה בטלפון */
+
+  /* גופנים */
+  /* Frank Ruhl Libre בכל האתר. Heebo ושאר הגופנים רק כגיבוי אם הגופן לא נטען */
+  --font-literary: "Frank Ruhl Libre", "Heebo", "Times New Roman", serif;
+  --font-ui: var(--font-literary);
+
+  /* עיגולים */
+  --r-card: 24px;
+  --r-field: 16px;
+  --r-btn: 999px;
+  --r-chip: 4px;          /* צ'יפים של מסמכים: מלבני-רך, כמו כרטיסייה בחדר קריאה */
+  --r-stamp: 6px;
+  --r-bubble: 22px;
+  --r-bubble-tail: 6px;   /* הפינה שמצביעה אל הכותב */
+
+  /* צללים */
+  --shadow-card: 0 8px 22px rgba(120, 76, 40, .10); /* צל חום-חם, תואם לנייר */
+  --shadow-btn: 0 3px 0 rgba(0, 0, 0, .16);
+
+  /* מרווחים */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+
+  /* טקסט */
+  --answer-size: 17.5px;
+  --answer-leading: 1.9;
+  --focus-ring: 3px solid var(--accent);}

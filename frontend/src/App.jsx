@@ -2,8 +2,20 @@ import { useState } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { getToken, clearToken } from "./api";
 import Login from "./Login";
-import Documents from "./Documents";
-import Chat from "./Chat";
+import Logo from "./components/Logo";
+import ChatPage from "./ChatPage";
+
+function Workspace({ onLogout }) {
+  return (
+    <div className="app" dir="rtl">
+      <header>
+        <Logo as="h1" />
+        <button type="button" className="btn-ghost" onClick={onLogout}>התנתקות</button>
+      </header>
+      <ChatPage />
+    </div>
+  );
+}
 
 export default function App() {
   const [loggedIn, setLoggedIn] = useState(!!getToken());
@@ -26,23 +38,17 @@ export default function App() {
         path="/login"
         element={loggedIn ? <Navigate to="/" replace /> : <Login onLogin={handleLogin} />}
       />
+      {/* כל הכתובות של הצ'אט חולקות רכיב אחד, כדי שהמצב לא יתאפס במעבר בין שיחות.
+          ChatPage קורא את הכתובת בעצמו (useMatch), ולכן לנתיבים הפנימיים אין element. */}
       <Route
-        path="/"
         element={
-          loggedIn ? (
-            <div className="app" dir="rtl">
-              <header>
-                <h1>DocuMind</h1>
-                <button onClick={handleLogout}>התנתקות</button>
-              </header>
-              <Documents />
-              <Chat />
-            </div>
-          ) : (
-            <Navigate to="/login" replace />
-          )
+          loggedIn ? <Workspace onLogout={handleLogout} /> : <Navigate to="/login" replace />
         }
-      />
+      >
+        <Route index />
+        <Route path="new" />
+        <Route path="c/:conversationId" />
+      </Route>
       <Route path="*" element={<Navigate to={loggedIn ? "/" : "/login"} replace />} />
     </Routes>
   );
