@@ -363,6 +363,12 @@ input:focus-visible { outline: var(--focus-ring); outline-offset: 1px; border-co
 /* ===== תנועה: רק למי שלא ביקש להפחית אנימציות ===== */
 @media (prefers-reduced-motion: no-preference) {
   .chat-box, .sidebar { scroll-behavior: smooth; }
+  /* FadeText: טקסט שמשתנה (למשל כותרת שיחה) נכנס בעדינות */
+  .fade-in { animation: fade-in .35s ease-out; }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
   .stamp { animation: stamp-press .4s cubic-bezier(.2, 1.3, .4, 1) both; }
   @keyframes stamp-press {
     from { transform: rotate(-6deg) scale(1.5); opacity: 0; }

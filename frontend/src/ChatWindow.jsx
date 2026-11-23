@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Answer from "./Answer";
+import FadeText from "./components/FadeText";
 import MessageBubble from "./MessageBubble";
 
 const NEAR_BOTTOM_PX = 120; // הודעה חדשה גוללת אוטומטית רק אם המשתמש כבר קרוב לתחתית
@@ -43,7 +44,9 @@ export default function ChatWindow({
 
   return (
     <div className="card chat-card">
-      <h2>{title}</h2>
+      <h2>
+        <FadeText text={title} />
+      </h2>
 
       <div className="chat-box" ref={scrollRef} onScroll={handleScroll}>
         {loading && <p className="hint">טוען את השיחה...</p>}

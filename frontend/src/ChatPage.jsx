@@ -121,6 +121,7 @@ export default function ChatPage() {
     if (!creatingRef.current) {
       creatingRef.current = createConversation()
         .then((created) => {
+          setConversations((prev) => [created, ...prev]); // מופיעה בסרגל מיד
           navigate(`/c/${created.id}`, { replace: true });
           return created.id;
         })
@@ -157,13 +158,24 @@ export default function ChatPage() {
       setChat((prev) =>
         prev.id === conversationId ? { ...prev, messages: [...prev.messages, answer] } : prev
       );
+      // הכותרת (זמנית או חכמה) מגיעה עם התשובה, אז אין צורך לטעון את הרשימה מחדש
+      bumpConversation(conversationId, { title: data.title });
     } catch (err) {
       const conversationId = targetId;
       setChat((prev) => (prev.id === conversationId ? { ...prev, error: err.message } : prev));
+      refreshConversations(); // אחרי כישלון לא בטוח מה המצב בשרת, אז טוענים מחדש
     } finally {
       setPendingId(undefined);
-      refreshConversations(); // כותרת וסדר מתעדכנים בשרת אחרי שאלה
     }
+  }
+
+  // מעדכן שיחה ברשימה ומעביר אותה לראש, כמו שהשרת ממיין (לפי פעילות אחרונה)
+  function bumpConversation(id, changes) {
+    setConversations((prev) => {
+      const current = prev.find((c) => c.id === id);
+      if (!current) return prev;
+      return [{ ...current, ...changes }, ...prev.filter((c) => c.id !== id)];
+    });
   }
 
   async function handleRename(id, title) {

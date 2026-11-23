@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import FadeText from "./components/FadeText";
 
 const TITLE_MAX_LENGTH = 100; // תואם ל-conversation_title_max_length בשרת
 
@@ -53,7 +54,7 @@ function ConversationItem({ conversation, active, disabled, onSelect, onRename, 
         title={conversation.title}
         aria-current={active ? "page" : undefined}
       >
-        {conversation.title}
+        <FadeText text={conversation.title} />
       </button>
       <button type="button" className="icon" onClick={startEditing} disabled={disabled} aria-label="שינוי שם" title="שינוי שם">
         ✎

@@ -120,3 +120,29 @@ def answer_from_web(question: str) -> tuple[str, list[dict]]:
                         seen.add(ann.url)
                         links.append({"title": ann.title or ann.url, "url": ann.url})
     return response.output_text, links
+
+
+# ההוראה באנגלית בכוונה: הוראה בעברית גרמה למודל לכתוב כותרת בעברית גם לשאלה באנגלית.
+# כך השפה נקבעת רק לפי השאלה.
+TITLE_PROMPT = """Write a short title for a conversation, based on its first question and the start of the answer.
+- 2 to 5 words.
+- Use the SAME language as the question: Hebrew question -> Hebrew title, English question -> English title.
+- Describe the topic; do not copy the question.
+- No quotes and no period at the end.
+Return only the title."""
+
+
+def generate_title(question: str, answer_excerpt: str) -> str:
+    """כותרת קצרה לשיחה. זורקת OpenAIError בכישלון או ב-timeout; הקורא מחליט מה לעשות."""
+    response = client.with_options(
+        timeout=settings.title_timeout_seconds, max_retries=0
+    ).chat.completions.create(
+        model=settings.chat_model,
+        messages=[
+            {"role": "system", "content": TITLE_PROMPT},
+            {"role": "user", "content": f"Question: {question}\n\nStart of the answer: {answer_excerpt}"},
+        ],
+        temperature=0.2,
+        max_tokens=20,
+    )
+    return response.choices[0].message.content or ""

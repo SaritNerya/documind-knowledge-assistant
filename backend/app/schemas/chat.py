@@ -19,6 +19,7 @@ class Source(BaseModel):
 class AskResponse(BaseModel):
     answer: str
     sources: list[Source] = []
+    title: str  # הכותרת הנוכחית של השיחה, כדי שהפרונט יעדכן את הסרגל בלי קריאה נוספת
 
 
 class MessageOut(BaseModel):

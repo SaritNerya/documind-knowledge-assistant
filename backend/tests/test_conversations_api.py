@@ -13,7 +13,7 @@ def client(db, monkeypatch):
     from fastapi.testclient import TestClient
 
     from app.main import app
-    from app.services import conversations
+    from app.services import conversations, titles
     from app.services.rag import RagResult
 
     calls = []
@@ -30,6 +30,17 @@ def client(db, monkeypatch):
     monkeypatch.setattr(conversations, "answer_question", fake_answer)
     c = TestClient(app)
     c.rag_calls = calls
+
+    # מודל הכותרות: מחזיר את מה ש-c.title_reply() מחזיר (או זורק). ברירת מחדל: תשובה ריקה,
+    # כלומר כישלון, כך שבדיקות שלא עוסקות בכותרת חכמה רואות את הכותרת הזמנית.
+    c.title_calls = []
+    c.title_reply = lambda: ""
+
+    def fake_title(question, answer_excerpt):
+        c.title_calls.append({"question": question, "answer_excerpt": answer_excerpt})
+        return c.title_reply()
+
+    monkeypatch.setattr(titles, "generate_title", fake_title)
     return c
 
 
@@ -301,3 +312,112 @@ def test_upload_limit_checked_before_embeddings(client, db, alice, monkeypatch):
     listed = client.get(f"/conversations/{other}/documents", headers=alice).json()
     assert [d["filename"] for d in listed] == ["דוח.pdf"]
     assert client.get("/conversations", headers=alice).json()[0]["title"] == "דוח.pdf"
+
+
+# ===== כותרת חכמה (המודל מוחלף ב-client.title_reply) =====
+
+def titles_of(client, headers):
+    return {c["id"]: c["title"] for c in client.get("/conversations", headers=headers).json()}
+
+
+def test_smart_title_after_first_answer_only(client, alice):
+    client.title_reply = lambda: "ימי חופשה לעובדים"
+    cid = new_conversation(client, alice)
+
+    res = ask(client, alice, cid, "כמה ימי חופשה מגיעים לי בשנה הראשונה?")
+    assert res.json()["title"] == "ימי חופשה לעובדים"  # מוחזר בתשובה, בלי קריאה נוספת
+    assert titles_of(client, alice)[cid] == "ימי חופשה לעובדים"
+    assert client.title_calls[0]["answer_excerpt"].startswith("תשובה ל:")
+
+    client.title_reply = lambda: "כותרת אחרת לגמרי"
+    res = ask(client, alice, cid, "ומה לגבי מחלה?")
+    assert res.json()["title"] == "ימי חופשה לעובדים"
+    assert len(client.title_calls) == 1  # רק אחרי התשובה הראשונה
+
+
+def raise_timeout():
+    raise OpenAIError("timeout")
+
+
+@pytest.mark.parametrize("reply", [
+    raise_timeout,                              # שגיאה או timeout
+    lambda: "",                                 # ריקה
+    lambda: "חופשה",                            # מילה אחת: קצרה מדי
+    lambda: "אחת שתיים שלוש ארבע חמש שש",       # 6 מילים: ארוכה מדי
+])
+def test_smart_title_failure_keeps_temporary_title(client, alice, reply):
+    client.title_reply = reply
+    cid = new_conversation(client, alice)
+
+    res = ask(client, alice, cid, "כמה ימי חופשה?")
+    assert res.status_code == 200
+    assert res.json()["answer"] == "תשובה ל: כמה ימי חופשה?"  # התשובה לא נפגעה
+    assert res.json()["title"] == "כמה ימי חופשה?"
+    assert titles_of(client, alice)[cid] == "כמה ימי חופשה?"
+
+
+def test_manual_title_is_never_replaced_by_smart_title(client, alice):
+    client.title_reply = lambda: "כותרת מהמודל"
+    cid = new_conversation(client, alice)
+    client.patch(f"/conversations/{cid}", headers=alice, json={"title": "השם שלי"})
+
+    res = ask(client, alice, cid)
+    assert res.json()["title"] == "השם שלי"
+    assert client.title_calls == []  # בכלל לא פונים למודל
+
+
+def test_rename_while_model_works_is_not_overwritten(client, alice):
+    from app.core.database import SessionLocal
+    from app.models.conversation import Conversation
+
+    cid = new_conversation(client, alice)
+
+    def rename_meanwhile():
+        # המשתמשת משנה שם בזמן שהמודל מייצר כותרת (עדכון ממסד נפרד, כמו בקשה מקבילה)
+        with SessionLocal() as other:
+            other.query(Conversation).filter(Conversation.id == cid).update(
+                {Conversation.title: "שם ידני", Conversation.auto_title: False}
+            )
+            other.commit()
+        return "כותרת מהמודל"
+
+    client.title_reply = rename_meanwhile
+    res = ask(client, alice, cid)
+    assert res.json()["title"] == "שם ידני"
+    assert titles_of(client, alice)[cid] == "שם ידני"
+
+
+def test_smart_title_does_not_touch_other_users(client, alice, bob):
+    client.title_reply = lambda: "ימי חופשה לעובדים"
+    mine = new_conversation(client, alice)
+    theirs = new_conversation(client, bob)
+    before = titles_of(client, bob)
+
+    ask(client, alice, mine)
+    assert titles_of(client, bob) == before
+    assert before[theirs] == "שיחה חדשה"
+
+
+def test_smart_title_is_not_counted_in_daily_limit(client, alice, monkeypatch):
+    from app.core.config import settings
+
+    monkeypatch.setattr(settings, "daily_question_limit", 1)
+    client.title_reply = lambda: "ימי חופשה לעובדים"
+    assert ask(client, alice, new_conversation(client, alice)).status_code == 200
+    assert len(client.title_calls) == 1
+    # השאלה השנייה נחסמת בגלל השאלה הראשונה בלבד, לא בגלל קריאת הכותרת
+    assert ask(client, alice, new_conversation(client, alice)).status_code == 429
+
+
+@pytest.mark.parametrize("raw, expected", [
+    ('"ימי חופשה לעובדים."', "ימי חופשה לעובדים"),
+    ("  Vacation   policy  ", "Vacation policy"),
+    ("“נהלי נסיעות”", "נהלי נסיעות"),
+    ("", None),
+    ("מילה", None),
+    ("a b c d e f", None),
+])
+def test_clean_title(raw, expected):
+    from app.services.titles import clean_title
+
+    assert clean_title(raw) == expected

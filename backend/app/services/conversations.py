@@ -14,20 +14,11 @@ from app.models.document import Document
 from app.models.message import Message
 from app.models.question_usage import QuestionUsage
 from app.services.rag import RagResult, answer_question
+from app.services.titles import DEFAULT_TITLE, smart_title, temporary_title
 
 logger = logging.getLogger(__name__)
 
 HISTORY_LIMIT = 6  # כמה הודעות אחרונות מהשיחה מועברות למודל
-DEFAULT_TITLE = "שיחה חדשה"
-
-
-def make_title(question: str) -> str:
-    """כותרת מהשאלה הראשונה: רווחים מצומצמים, חיתוך לאורך המוגדר עם '…'."""
-    text = " ".join(question.split())
-    limit = settings.auto_title_length
-    if len(text) <= limit:
-        return text
-    return text[: limit - 1].rstrip() + "…"
 
 
 def get_owned_conversation(db: Session, conversation_id: int, user_id: int) -> Conversation:
@@ -161,10 +152,11 @@ def ask_in_conversation(
         logger.exception("LLM call failed for user=%s", user_id)
         raise HTTPException(status_code=502, detail="LLM service unavailable")
 
-    # שומרים רק אחרי שהכול הצליח, כדי שלא יישארו שאלות בלי תשובה
-    # השאלה הראשונה קובעת את השם, גם אם קודם נקבע שם זמני משם הקובץ
-    if not recent and conversation.auto_title:
-        conversation.title = make_title(question)
+    # שומרים רק אחרי שהכול הצליח, כדי שלא יישארו שאלות בלי תשובה.
+    # השאלה הראשונה נותנת כותרת זמנית, גם אם קודם נקבע שם זמני משם הקובץ.
+    is_first_question = not recent
+    if is_first_question and conversation.auto_title:
+        conversation.title = temporary_title(question)
     conversation.updated_at = func.now()
     db.add_all([
         QuestionUsage(user_id=user_id),
@@ -178,8 +170,26 @@ def ask_in_conversation(
     ])
     db.commit()
 
+    # רק אחרי שהתשובה נשמרה: כותרת חכמה. כישלון כאן לא משפיע על התשובה.
+    if is_first_question and conversation.auto_title:
+        _apply_smart_title(db, conversation, question, result.answer)
+
     logger.info(
         "ask user=%s conversation=%s found=%s web=%s latency=%.2fs",
         user_id, conversation.id, result.found, result.used_web, time.perf_counter() - start,
     )
     return result
+
+
+def _apply_smart_title(db: Session, conversation: Conversation, question: str, answer: str) -> None:
+    """מחליף את הכותרת הזמנית בכותרת מהמודל.
+    העדכון מותנה ב-auto_title בתוך אותה שאילתה: אם המשתמשת שינתה את השם בזמן
+    שהמודל עבד, השם שלה נשאר ולא נדרס."""
+    title = smart_title(question, answer)
+    if title is None:
+        return  # הכותרת הזמנית נשארת; smart_title כבר רשם ב-log
+    db.query(Conversation).filter(
+        Conversation.id == conversation.id, Conversation.auto_title.is_(True)
+    ).update({Conversation.title: title}, synchronize_session=False)
+    db.commit()
+    db.refresh(conversation)

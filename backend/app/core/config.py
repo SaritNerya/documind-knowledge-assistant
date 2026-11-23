@@ -19,7 +19,8 @@ class Settings(BaseSettings):
     daily_question_limit: int = 30          # למשתמש, בכל השיחות יחד
     max_conversations_per_user: int = 50
     conversation_title_max_length: int = 100  # אורך מקסימלי בשינוי שם
-    auto_title_length: int = 50               # כותרת אוטומטית מהשאלה הראשונה
+    auto_title_length: int = 50               # כותרת זמנית מהשאלה הראשונה
+    title_timeout_seconds: float = 5.0        # זמן מקסימלי ליצירת כותרת חכמה במודל
 
 
 settings = Settings()

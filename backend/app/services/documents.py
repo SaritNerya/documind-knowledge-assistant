@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.models.conversation import Conversation
 from app.models.document import Document
-from app.services.conversations import DEFAULT_TITLE, make_title
+from app.services.titles import DEFAULT_TITLE, temporary_title
 from app.services.ingestion import ingest_document
 
 UPLOAD_DIR = Path(settings.upload_dir)
@@ -78,7 +78,7 @@ def upload_document(db: Session, conversation: Conversation, file: UploadFile) -
 
     # שם זמני לשיחה חדשה, עד שהשאלה הראשונה תקבע את השם
     if conversation.auto_title and conversation.title == DEFAULT_TITLE:
-        conversation.title = make_title(file.filename)
+        conversation.title = temporary_title(file.filename)
     conversation.updated_at = func.now()
     db.commit()
     db.refresh(doc)
