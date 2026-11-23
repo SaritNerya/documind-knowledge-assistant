@@ -9,15 +9,25 @@
 A bilingual (Hebrew / English) knowledge assistant that answers questions from your own PDF and Word files,
 cites the exact passage behind every answer, and says so when the answer isn't there.
 
-### [🌐 Try the live app](https://documind-frontend.mangoplant-5d5575b8.italynorth.azurecontainerapps.io/)
+<br/>
 
-![Azure](https://img.shields.io/badge/Live_on-Azure_Container_Apps-0078D4?logo=microsoftazure&logoColor=white)
+<a href="https://documind-frontend.mangoplant-5d5575b8.italynorth.azurecontainerapps.io/">
+  <img src="https://img.shields.io/badge/▶_Open_the_live_app-Deployed_on_Azure-0078D4?style=for-the-badge&logo=microsoftazure&logoColor=white" alt="Open the live app, deployed on Azure" height="48" />
+</a>
+
+**🌐 [documind-frontend.mangoplant-5d5575b8.italynorth.azurecontainerapps.io](https://documind-frontend.mangoplant-5d5575b8.italynorth.azurecontainerapps.io/)**
+
+<sub>Running in production on Azure Container Apps · API docs: <a href="https://documind-backend.mangoplant-5d5575b8.italynorth.azurecontainerapps.io/docs">Swagger UI</a></sub>
+
+<br/>
+
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL_16-pgvector-4169E1?logo=postgresql&logoColor=white)
 ![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o--mini_·_embeddings-412991?logo=openai&logoColor=white)
 ![React](https://img.shields.io/badge/React_19-Vite-61DAFB?logo=react&logoColor=black)
-![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 ![Tests](https://img.shields.io/badge/tests-pytest-0A9EDC?logo=pytest&logoColor=white)
 
 </div>
@@ -110,7 +120,7 @@ Limits (file type, size, documents per conversation and per user) are checked **
 | **Document parsing** | pypdf, python-docx |
 | **Frontend** | React 19, React Router 7, Vite, hand-written CSS with design tokens (no UI framework) |
 | **Hosting** | **Azure Container Apps** (production): a frontend container (nginx) and a backend container (uvicorn) |
-| **Infra** | Docker (multi-stage build), Docker Compose for local development, nginx with SPA fallback |
+| **Infra** | Docker (multi-stage build), nginx with SPA fallback |
 | **Quality** | pytest with mocked LLM calls, an offline evaluation harness, ESLint |
 
 ---
@@ -142,67 +152,32 @@ flowchart TB
 
 ---
 
-## ☁️ Deployment
+## ☁️ Live on Azure
 
-DocuMind runs in production on **Azure Container Apps**:
-👉 **https://documind-frontend.mangoplant-5d5575b8.italynorth.azurecontainerapps.io/**
+DocuMind is deployed to the cloud and running in production on **Azure Container Apps**.
 
-| Piece | How it runs |
+> ### 👉 [Open DocuMind](https://documind-frontend.mangoplant-5d5575b8.italynorth.azurecontainerapps.io/)
+> - **App:** https://documind-frontend.mangoplant-5d5575b8.italynorth.azurecontainerapps.io/
+> - **API docs (Swagger UI):** https://documind-backend.mangoplant-5d5575b8.italynorth.azurecontainerapps.io/docs
+>
+> Want something to ask about? Upload one of the sample HR policies from [`sample-docs/`](sample-docs).
+
+| Piece | How it runs in the cloud |
 |---|---|
-| **Frontend** | The React app is built into static files and served by **nginx**, with an SPA fallback so deep links like `/c/42` survive a refresh. The API address is baked in at build time (`VITE_API_URL` build argument). |
-| **Backend** | FastAPI on uvicorn, from a multi-stage Docker image. Configured through environment variables and secrets: `DATABASE_URL`, `SECRET_KEY`, `OPENAI_API_KEY`, `CORS_ORIGINS` (the frontend's URL). |
+| **Frontend** | A container app serving the built React app with **nginx**, with an SPA fallback so deep links like `/c/42` survive a refresh. The API address is baked in at build time (`VITE_API_URL` build argument). |
+| **Backend** | A second container app running FastAPI on uvicorn, from a multi-stage Docker image. Configured through environment variables and secrets: `DATABASE_URL`, `SECRET_KEY`, `OPENAI_API_KEY`, `CORS_ORIGINS` (the frontend's URL). |
 | **Database** | PostgreSQL with the **pgvector** extension. |
 
 **Releasing a version that changes the schema**
 
 1. Back up the database.
-2. Run the migrations against it: `alembic upgrade head`. Every migration is idempotent and runs in a single transaction.
+2. Run the migrations against it (`alembic upgrade head`). Every migration is idempotent and runs in a single transaction.
 3. Deploy the backend and frontend images together.
-
----
-
-## 💻 Run it locally
-
-The same two containers, plus a local PostgreSQL, run with Docker Compose.
-
-### Prerequisites
-- Docker and Docker Compose
-- An OpenAI API key
-
-### 1 · Configure
-Create a `.env` file in the project root:
-
-```env
-POSTGRES_PASSWORD=change-me
-SECRET_KEY=a-long-random-string
-OPENAI_API_KEY=sk-...
-INVITE_CODE=            # optional: leave empty to allow open registration
-```
-
-### 2 · Build and migrate
-```bash
-docker compose build
-docker compose up -d db
-docker compose run --rm backend alembic upgrade head
-```
-
-### 3 · Run
-```bash
-docker compose up -d
-```
-
-| Service | URL |
-|---|---|
-| Web app | http://localhost:3000 |
-| API | http://localhost:8000 |
-| Interactive API docs | http://localhost:8000/docs |
-
-Sample HR policy documents for trying it out are in [`sample-docs/`](sample-docs).
 
 <details>
 <summary><b>Configuration reference</b></summary>
 
-All settings live in [`backend/app/core/config.py`](backend/app/core/config.py) and can be overridden with environment variables.
+All settings live in [`backend/app/core/config.py`](backend/app/core/config.py) and can be overridden with environment variables on the backend container.
 
 | Variable | Default | Purpose |
 |---|---|---|
@@ -216,14 +191,7 @@ All settings live in [`backend/app/core/config.py`](backend/app/core/config.py) 
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | `60` | Regular sign-in |
 | `REMEMBER_ME_EXPIRE_DAYS` | `30` | "Remember me" sign-in |
 | `TITLE_TIMEOUT_SECONDS` | `5` | Upper bound for smart-title generation |
-| `CORS_ORIGINS` | `http://localhost:5173` | Comma-separated |
-
-</details>
-
-<details>
-<summary><b>Behind a TLS-inspecting proxy?</b></summary>
-
-If your network inspects HTTPS traffic (corporate proxies, filters), add its root certificate to `backend/certs/` and run the backend with `update-ca-certificates` before `uvicorn`, so calls to OpenAI can be verified.
+| `CORS_ORIGINS` | `http://localhost:5173` | Comma-separated. In production: the frontend's URL |
 
 </details>
 
@@ -232,13 +200,6 @@ If your network inspects HTTPS traffic (corporate proxies, filters), add its roo
 ## 🧪 Testing
 
 The test suite runs against a **real PostgreSQL** database, so it exercises pgvector, cascades, and the Alembic migrations themselves. Every OpenAI call is mocked.
-
-```bash
-docker compose exec db createdb -U postgres documind_test
-docker compose run --rm --no-deps -v "$(pwd)/backend:/app" \
-  -e TEST_DATABASE_URL="postgresql+psycopg2://postgres:<password>@db:5432/documind_test" \
-  backend sh -c "pip install -q pytest httpx && python -m pytest -q"
-```
 
 A safety check refuses to run unless the database name ends in `_test`. Without `TEST_DATABASE_URL`, the database tests are skipped.
 
@@ -256,10 +217,6 @@ A safety check refuses to run unless the database name ends in `_test`. Without 
 | `chitchat` | It responds politely without citing sources |
 
 It also reports **document-level and passage-level retrieval hit rates** and latency, so changes to prompts, chunking, or retrieval can be measured instead of guessed.
-
-```bash
-cd evaluation && python run_eval.py
-```
 
 ---
 
@@ -306,7 +263,7 @@ DocuMind/
 | `GET` · `POST` | `/conversations/{id}/documents` | List · upload a PDF / DOCX |
 | `DELETE` | `/documents/{id}` | Delete a document and its file |
 
-Full interactive documentation: **`/docs`** (Swagger UI, generated by FastAPI).
+Full interactive documentation, generated by FastAPI: **[live Swagger UI](https://documind-backend.mangoplant-5d5575b8.italynorth.azurecontainerapps.io/docs)**.
 
 ---
 
