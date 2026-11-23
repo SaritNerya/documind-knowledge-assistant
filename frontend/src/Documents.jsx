@@ -4,6 +4,14 @@ import FileDropZone from "./components/FileDropZone";
 
 const ACCEPTED_FILES = ".pdf,.docx"; // תואם ל-ALLOWED_EXTENSIONS בשרת
 
+function UploadIcon() {
+  return (
+    <svg className="dropzone-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M12 16V4m0 0-5 5m5-5 5 5M5 20h14" />
+    </svg>
+  );
+}
+
 /**
  * תיבת "כל המסמכים": מסומנת כשכולם נבחרו, ריקה כשאף אחד, ובמצב ביניים (קו) כשרק חלקם.
  * לחיצה כשהכול מסומן מבטלת את כולם. בכל מצב אחר היא בוחרת את כולם.
@@ -71,8 +79,9 @@ export default function Documents({
           <span>מעלה ומעבד את המסמך, זה עשוי לקחת כמה שניות...</span>
         ) : (
           <>
-            <span className="dropzone-title">גררי לכאן קובץ, או לחצי לבחירה</span>
-            <span className="hint">PDF או Word</span>
+            <UploadIcon />
+            <span className="dropzone-title">גררי קובץ לכאן</span>
+            <span className="hint">או לחצי לבחירה · PDF או Word</span>
           </>
         )}
       </FileDropZone>

@@ -117,6 +117,10 @@ input:focus-visible { outline: var(--focus-ring); outline-offset: 1px; border-co
 .dropzone:focus-within { outline: var(--focus-ring); outline-offset: 2px; }
 .dropzone.is-disabled { cursor: default; border-color: var(--line); background: var(--field); }
 .dropzone-title { font-weight: 500; }
+.dropzone .hint { font-size: 13px; }
+/* שורות קצרות שנשברות באופן מאוזן, ולא מילה אחת לבד בשורה השנייה */
+.dropzone > span { text-wrap: balance; }
+.dropzone-icon { width: 26px; height: 26px; fill: none; stroke: var(--accent); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
 /* ===== צ'אט ===== */
 .chat-box {
