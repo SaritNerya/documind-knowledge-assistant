@@ -9,6 +9,9 @@
 A bilingual (Hebrew / English) knowledge assistant that answers questions from your own PDF and Word files,
 cites the exact passage behind every answer, and says so when the answer isn't there.
 
+### [🌐 Try the live app](https://documind-frontend.mangoplant-5d5575b8.italynorth.azurecontainerapps.io/)
+
+![Azure](https://img.shields.io/badge/Live_on-Azure_Container_Apps-0078D4?logo=microsoftazure&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL_16-pgvector-4169E1?logo=postgresql&logoColor=white)
@@ -44,7 +47,9 @@ The RAG pipeline is written from scratch on the OpenAI SDK and pgvector, with no
 | 🔖 **Footnotes & source preview** | Inline citation numbers open the source passage, with the matching sentence highlighted. |
 | ✅ **"Verified against the document" stamp** | An ink-stamp badge appears only on answers backed by your documents, not on web or small-talk answers. |
 | 🌍 **Web fallback** | General-knowledge questions are answered through OpenAI's web search tool, with linked sources. |
-| 🔐 **Accounts** | JWT auth, bcrypt passwords, invite codes, "remember me", live form validation, password strength meter. |
+| 📋 **One-click copy** | Copy any question or answer (without its sources). Works on non-HTTPS pages too. |
+| 🔐 **Accounts** | JWT auth, bcrypt passwords, invite codes, "remember me", login and register tabs, live form validation, password strength meter. |
+| 👤 **Profile, settings & quota** | An avatar menu leads to a profile (editable display name, join date, usage stats), settings (change password, delete the account after typing your email to confirm), and today's remaining questions with a progress bar. |
 | 🎨 **Designed UI** | A warm "botanical notebook" design system: design tokens, RTL-first layout, accessible components, `prefers-reduced-motion` respected. |
 
 ---
@@ -104,7 +109,8 @@ Limits (file type, size, documents per conversation and per user) are checked **
 | **Auth** | JWT (python-jose), bcrypt, invite codes |
 | **Document parsing** | pypdf, python-docx |
 | **Frontend** | React 19, React Router 7, Vite, hand-written CSS with design tokens (no UI framework) |
-| **Infra** | Docker (multi-stage build), Docker Compose, nginx (SPA fallback), Azure |
+| **Hosting** | **Azure Container Apps** (production): a frontend container (nginx) and a backend container (uvicorn) |
+| **Infra** | Docker (multi-stage build), Docker Compose for local development, nginx with SPA fallback |
 | **Quality** | pytest with mocked LLM calls, an offline evaluation harness, ESLint |
 
 ---
@@ -113,14 +119,15 @@ Limits (file type, size, documents per conversation and per user) are checked **
 
 ```mermaid
 flowchart TB
-    subgraph Client["Browser"]
-        UI["React SPA<br/>conversations · chat · documents"]
+    U(["Browser"]) -- HTTPS --> FE
+    subgraph ACA["Azure Container Apps"]
+        FE["Frontend container<br/>nginx · React SPA<br/>chat · documents · account pages"]
+        subgraph BE["Backend container · FastAPI"]
+            API["Thin routers<br/>auth · account · conversations · documents"]
+            SVC["Services<br/>conversations · rag · retrieval · titles · quotes · ingestion · account"]
+        end
     end
-    subgraph Server["FastAPI"]
-        API["Thin routers<br/>auth · conversations · documents"]
-        SVC["Services<br/>conversations · rag · retrieval · titles · quotes · ingestion"]
-    end
-    UI -- "REST + JWT" --> API --> SVC
+    FE -- "REST + JWT" --> API --> SVC
     SVC -- "SQL + vector search" --> PG[("PostgreSQL + pgvector")]
     SVC -- "chat · embeddings · web search" --> OAI["OpenAI API"]
     SVC --> FS[("uploads/")]
@@ -135,7 +142,28 @@ flowchart TB
 
 ---
 
-## 🚀 Getting started
+## ☁️ Deployment
+
+DocuMind runs in production on **Azure Container Apps**:
+👉 **https://documind-frontend.mangoplant-5d5575b8.italynorth.azurecontainerapps.io/**
+
+| Piece | How it runs |
+|---|---|
+| **Frontend** | The React app is built into static files and served by **nginx**, with an SPA fallback so deep links like `/c/42` survive a refresh. The API address is baked in at build time (`VITE_API_URL` build argument). |
+| **Backend** | FastAPI on uvicorn, from a multi-stage Docker image. Configured through environment variables and secrets: `DATABASE_URL`, `SECRET_KEY`, `OPENAI_API_KEY`, `CORS_ORIGINS` (the frontend's URL). |
+| **Database** | PostgreSQL with the **pgvector** extension. |
+
+**Releasing a version that changes the schema**
+
+1. Back up the database.
+2. Run the migrations against it: `alembic upgrade head`. Every migration is idempotent and runs in a single transaction.
+3. Deploy the backend and frontend images together.
+
+---
+
+## 💻 Run it locally
+
+The same two containers, plus a local PostgreSQL, run with Docker Compose.
 
 ### Prerequisites
 - Docker and Docker Compose
@@ -214,7 +242,7 @@ docker compose run --rm --no-deps -v "$(pwd)/backend:/app" \
 
 A safety check refuses to run unless the database name ends in `_test`. Without `TEST_DATABASE_URL`, the database tests are skipped.
 
-**What's covered:** row-level authorization (404 on another user's data), cascade deletes including files on disk, conversation ordering and limits, the per-user daily quota (which survives deleting a conversation), history scoped to the current conversation, retrieval scoped to the selected documents, source quotes and highlighting, smart titles (first answer only, failure fallback, a manual rename is never overwritten), "remember me" token lifetimes, and a **data-preserving migration** from the old single-chat schema, including downgrade and upgrade again.
+**What's covered:** row-level authorization (404 on another user's data), cascade deletes including files on disk, conversation ordering and limits, the per-user daily quota (which survives deleting a conversation), history scoped to the current conversation, retrieval scoped to the selected documents, source quotes and highlighting, smart titles (first answer only, failure fallback, a manual rename is never overwritten), "remember me" token lifetimes, the account endpoints (display name, usage stats, password change, account deletion that removes only that user's data and files), and a **data-preserving migration** from the old single-chat schema, including downgrade and upgrade again.
 
 ### Evaluating answer quality
 
@@ -245,13 +273,15 @@ DocuMind/
 │   │   ├── core/         # Settings, database, security (JWT, bcrypt)
 │   │   ├── models/       # SQLAlchemy models (users, conversations, messages, documents, chunks)
 │   │   ├── schemas/      # Pydantic request/response models
-│   │   └── services/     # rag · retrieval · llm · embeddings · ingestion · titles · quotes …
-│   ├── alembic/          # Idempotent schema migrations
+│   │   └── services/     # rag · retrieval · llm · embeddings · ingestion · titles · quotes · account …
+│   ├── alembic/          # Idempotent schema migrations (0001 baseline → 0004)
 │   └── tests/            # pytest suite (real Postgres, mocked OpenAI)
 ├── frontend/
+│   ├── public/           # Site icon
 │   └── src/
-│       ├── components/   # Reusable UI: TextField, Tabs, DropdownMenu, FileDropZone, CopyButton …
-│       ├── hooks/        # useConversationDocuments, useCurrentUser
+│       ├── account/      # Profile, settings and quota pages + the signed-in user context
+│       ├── components/   # Reusable UI: TextField, Tabs, DropdownMenu, FileDropZone, CopyButton, ProgressBar …
+│       ├── hooks/        # useConversationDocuments, useCurrentUser, useApiData, useAsyncAction, useFormFields
 │       └── styles/       # Design tokens + component styles
 ├── evaluation/           # Labeled question set and evaluation scripts
 ├── sample-docs/          # Example HR policies to try the assistant with
@@ -265,7 +295,10 @@ DocuMind/
 | Method | Endpoint | Description |
 |---|---|---|
 | `POST` | `/auth/register` · `/auth/login` | Create an account · get a JWT (optional `remember`) |
-| `GET` | `/auth/me` | The signed-in user |
+| `GET` · `PATCH` | `/auth/me` | The signed-in user · update the display name |
+| `GET` | `/auth/me/usage` | Documents, conversations and questions, plus today's quota |
+| `POST` | `/auth/me/password` | Change the password (requires the current one) |
+| `DELETE` | `/auth/me` | Delete the account and all its data (requires typing the email) |
 | `GET` · `POST` | `/conversations` | List (most recent first) · create |
 | `PATCH` · `DELETE` | `/conversations/{id}` | Rename · delete (`?if_empty=true` deletes only an empty one) |
 | `GET` | `/conversations/{id}/messages` | Conversation history with sources |
