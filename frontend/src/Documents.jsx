@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { uploadDocument, deleteDocument } from "./api";
+import FileDropZone from "./components/FileDropZone";
+
+const ACCEPTED_FILES = ".pdf,.docx"; // תואם ל-ALLOWED_EXTENSIONS בשרת
 
 /**
  * תיבת "כל המסמכים": מסומנת כשכולם נבחרו, ריקה כשאף אחד, ובמצב ביניים (קו) כשרק חלקם.
@@ -29,10 +32,8 @@ export default function Documents({
   const [uploading, setUploading] = useState(false);
   const { docs, error, isSelected, selectedCount, toggle, setAll } = documents;
 
-  async function handleUpload(e) {
-    const input = e.target;
-    const file = input.files[0];
-    if (!file) return;
+  // מקבלת קובץ מ-FileDropZone (נגרר או נבחר), כבר אחרי בדיקת הסיומת
+  async function handleUpload(file) {
     setUploading(true);
     let id = conversationId;
     try {
@@ -44,7 +45,6 @@ export default function Documents({
       documents.showError(id, err.message);
     } finally {
       setUploading(false);
-      input.value = ""; // מאפשר להעלות שוב את אותו קובץ
     }
   }
 
@@ -61,8 +61,21 @@ export default function Documents({
   return (
     <aside className={`card side-panel docs-panel${open ? " open" : ""}`}>
       <h2>המסמכים בשיחה</h2>
-      <input type="file" accept=".pdf,.docx" onChange={handleUpload} disabled={uploading || disabled} />
-      {uploading && <p>מעלה ומעבד את המסמך, זה עשוי לקחת כמה שניות...</p>}
+      <FileDropZone
+        accept={ACCEPTED_FILES}
+        disabled={uploading || disabled}
+        onFile={handleUpload}
+        onReject={(message) => documents.showError(conversationId, message)}
+      >
+        {uploading ? (
+          <span>מעלה ומעבד את המסמך, זה עשוי לקחת כמה שניות...</span>
+        ) : (
+          <>
+            <span className="dropzone-title">גררי לכאן קובץ, או לחצי לבחירה</span>
+            <span className="hint">PDF או Word</span>
+          </>
+        )}
+      </FileDropZone>
       {error && <p className="error">{error}</p>}
       {docs.length === 0 && !uploading && <p className="hint">עוד לא הועלו מסמכים לשיחה הזו.</p>}
 
