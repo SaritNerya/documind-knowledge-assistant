@@ -42,6 +42,13 @@ export default function ChatWindow({
     onSend(q);
   }
 
+  // Enter שולח, Shift+Enter יורד שורה. בזמן הקלדה במקלדת הרכבה (isComposing) לא שולחים.
+  function handleKeyDown(e) {
+    if (e.key !== "Enter" || e.shiftKey || e.nativeEvent.isComposing) return;
+    e.preventDefault();
+    e.currentTarget.form.requestSubmit();
+  }
+
   return (
     <div className="card chat-card">
       <h2>
@@ -63,10 +70,13 @@ export default function ChatWindow({
       {note && <p className={`chat-note${blocked ? " is-warning" : ""}`} aria-live="polite">{note}</p>}
 
       <form className="chat-form" onSubmit={handleSubmit}>
-        <input
+        <textarea
+          rows={1}
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="הקלידי שאלה..."
+          aria-label="שאלה"
           maxLength={2000}
           disabled={sending || loading}
         />

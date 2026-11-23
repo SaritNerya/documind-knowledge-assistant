@@ -109,7 +109,7 @@ button:disabled { opacity: .55; cursor: default; }
 .button-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
 
 /* ===== שדות ===== */
-input {
+input, textarea {
   font-size: 16px; /* 16px ומעלה: מונע זום אוטומטי ב-iOS */
   color: var(--text);
   background: var(--field);
@@ -119,8 +119,8 @@ input {
   margin: var(--space-1) 0;
   min-width: 0;
 }
-input::placeholder { color: var(--muted); }
-input:focus-visible { outline: var(--focus-ring); outline-offset: 1px; border-color: var(--accent); }
+input::placeholder, textarea::placeholder { color: var(--muted); }
+input:focus-visible, textarea:focus-visible { outline: var(--focus-ring); outline-offset: 1px; border-color: var(--accent); }
 
 /* ===== אזור העלאת קבצים (FileDropZone): גרירה או לחיצה ===== */
 .dropzone {
@@ -158,8 +158,15 @@ input:focus-visible { outline: var(--focus-ring); outline-offset: 1px; border-co
   padding: var(--space-4) var(--space-1);
 }
 /* שורת הקלט מחוץ לאזור הגלילה, ולכן תמיד גלויה בתחתית בלי sticky */
-.chat-form { flex: none; display: flex; gap: var(--space-2); margin-top: var(--space-3); }
-.chat-form input { flex: 1; }
+.chat-form { flex: none; display: flex; align-items: flex-end; gap: var(--space-2); margin-top: var(--space-3); }
+/* תיבת השאלה גדלה עם הטקסט עד גובה מרבי, ואז נגללת. הכפתור נשאר צמוד לתחתית. */
+.chat-form textarea {
+  flex: 1;
+  field-sizing: content;
+  max-height: 10em;
+  line-height: 1.5;
+  resize: none;
+}
 
 /* ===== שורת פעולות של הודעה (שאלה או תשובה), למשל כפתור העתקה ===== */
 .message-actions { display: flex; margin-top: var(--space-1); }
