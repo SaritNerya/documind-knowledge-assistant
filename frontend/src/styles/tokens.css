@@ -32,6 +32,16 @@
   /* Frank Ruhl Libre בכל האתר. Heebo ושאר הגופנים רק כגיבוי אם הגופן לא נטען */
   --font-literary: "Frank Ruhl Libre", "Heebo", "Times New Roman", serif;
   --font-ui: var(--font-literary);
+  /* גופן תצוגה שובב, לנקודות קטנות שאמורות לבלוט (כמו האות באווטאר) */
+  --font-display: "Suez One", var(--font-literary);
+
+  /* אווטאר: חותם שעווה בטרקוטה, אות בצבע הנייר, ועלה מרווה מהלוגו */
+  --avatar-size: 48px;
+  --avatar-from: var(--accent);
+  --avatar-to: var(--accent-text);
+  --avatar-ink: var(--surface);
+  --avatar-leaf: var(--success);
+  --avatar-ring: var(--accent);
 
   /* עיגולים */
   --r-card: 24px;

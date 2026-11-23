@@ -50,6 +50,8 @@ export async function login(email, password, remember = false) {
   setToken(data.access_token, remember);
 }
 
+export const getCurrentUser = () => request("/auth/me");
+
 export const listDocuments = (conversationId) =>
   request(`/conversations/${conversationId}/documents`);
 

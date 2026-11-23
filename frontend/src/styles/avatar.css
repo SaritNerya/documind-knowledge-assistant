@@ -1,0 +1,78 @@
+/* אווטאר (Avatar.jsx): "חותם שעווה" בטרקוטה, עם האות הראשונה ועלה קטן מהלוגו.
+   כל הצבעים מ-tokens.css. */
+
+.avatar {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  border-radius: 50%;
+  /* אור רך מלמעלה, ושוליים כהים יותר: נראה כמו שעווה ולא כמו עיגול שטוח */
+  background: radial-gradient(circle at 35% 30%, var(--avatar-from) 55%, var(--avatar-to));
+  /* טבעת דקה בצבע הנייר וצל רך בגוון הטרקוטה: העיגול "יושב" מעל הדף */
+  box-shadow:
+    0 0 0 3px var(--surface),
+    0 6px 14px color-mix(in srgb, var(--avatar-from) 35%, transparent);
+  color: var(--avatar-ink);
+  user-select: none;
+}
+
+/* טבעת פנימית דקה, כמו המסגרת הכפולה של חותמת "מאומת מול המסמך" */
+.avatar::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  border: 1.5px solid color-mix(in srgb, var(--avatar-ink) 55%, transparent);
+}
+
+/* עלה קטן מהלוגו שמציץ מהפינה. הצורה ב-mask, הצבע מהטוקן.
+   right ולא inset-inline-end בכוונה: קישוט באותו צד כמו העלה בלוגו, בכל כיוון כתיבה */
+.avatar::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  right: -5px;
+  width: 18px;
+  height: 18px;
+  background: var(--avatar-leaf);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 20C4 10 10 4 20 4c0 10-6 16-16 16Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 20C4 10 10 4 20 4c0 10-6 16-16 16Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  transform-origin: bottom left;
+}
+
+.avatar-letter {
+  position: relative; /* מעל הטבעת הפנימית */
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: calc(var(--avatar-size) * .48);
+  line-height: 1;
+  translate: 0 1px; /* מרכוז אופטי: הגופן יושב מעט גבוה */
+}
+
+/* ===== תנועה: רק למי שלא ביקש להפחית אנימציות ===== */
+@media (prefers-reduced-motion: no-preference) {
+  /* "הטבעה" פנימה כשהדף נטען.
+     backwards ולא both: אחרי שהאנימציה נגמרת היא משחררת את scale, כדי שמעבר העכבר יעבוד */
+  .avatar { animation: avatar-press .5s cubic-bezier(.34, 1.56, .64, 1) backwards; }
+  @keyframes avatar-press {
+    from { opacity: 0; scale: 1.4; }
+    to { opacity: 1; scale: 1; }
+  }
+
+  /* מעבר עכבר: העיגול גדל מעט, האות מקפצת והעלה מתנדנד */
+  .avatar { transition: scale .25s cubic-bezier(.34, 1.56, .64, 1); }
+  .avatar:hover { scale: 1.06; }
+  .avatar:hover .avatar-letter { animation: letter-hop .45s ease-out; }
+  .avatar:hover::after { animation: leaf-sway .6s ease-in-out; }
+  @keyframes letter-hop {
+    0%, 100% { translate: 0 1px; }
+    40% { translate: 0 -4px; }
+  }
+  @keyframes leaf-sway {
+    0%, 100% { rotate: 0deg; }
+    30% { rotate: -18deg; }
+    65% { rotate: 10deg; }
+  }
+}

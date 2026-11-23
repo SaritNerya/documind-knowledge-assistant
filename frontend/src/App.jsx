@@ -4,6 +4,7 @@ import { getToken, clearToken } from "./api";
 import Login from "./Login";
 import Logo from "./components/Logo";
 import ChatPage from "./ChatPage";
+import UserMenu from "./UserMenu";
 
 function Workspace({ onLogout }) {
   return (
@@ -15,7 +16,7 @@ function Workspace({ onLogout }) {
             <Logo />
           </Link>
         </h1>
-        <button type="button" className="btn-ghost" onClick={onLogout}>התנתקות</button>
+        <UserMenu onLogout={onLogout} />
       </header>
       <ChatPage />
     </div>

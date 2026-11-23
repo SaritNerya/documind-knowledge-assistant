@@ -1,0 +1,74 @@
+/* תפריט נפתח (DropdownMenu). כל הערכים מ-tokens.css. */
+
+/* ===== כפתור הפתיחה ===== */
+.menu-root { position: relative; }
+.menu-trigger {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border-radius: 50%;
+  background: none;
+  box-shadow: none;
+}
+.menu-trigger:focus-visible { outline-offset: 4px; }
+/* כשהתפריט פתוח: טבעת בצבע הטרקוטה סביב האווטאר */
+.menu-trigger[aria-expanded="true"] .avatar {
+  box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--avatar-ring);
+}
+
+/* ===== התפריט: נפתח מתחת לכפתור, מיושר לקצה שלו ===== */
+.menu {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  inset-inline-end: 0;
+  z-index: 30;
+  min-width: 220px;
+  padding: var(--space-2);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-field);
+  box-shadow: var(--shadow-card);
+}
+.menu ul { list-style: none; margin: 0; padding: 0; }
+.menu-header {
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  margin-bottom: var(--space-1);
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 14px;
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--r-chip);
+  background: none;
+  box-shadow: none;
+  color: var(--text);
+  font-weight: 400;
+  text-align: start;
+}
+.menu-item:hover:not(:disabled), .menu-item:focus-visible { background: var(--quote-bg); }
+.menu-item:focus-visible { outline-offset: -2px; }
+.menu-item:disabled { opacity: 1; color: var(--muted); }
+.menu-badge {
+  padding: 1px 8px;
+  border-radius: var(--r-btn);
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 12px;
+}
+.has-separator { margin-top: var(--space-1); padding-top: var(--space-1); border-top: 1px solid var(--line); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .menu-trigger:active .avatar { scale: .92; } /* "מעיכה" קלה בלחיצה */
+  .menu { animation: menu-in .15s ease-out; transform-origin: top; }
+  @keyframes menu-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: none; }
+  }
+}

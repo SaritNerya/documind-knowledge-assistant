@@ -6,6 +6,7 @@ from app.schemas.user import UserCreate, UserOut, Token
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import hash_password
+from app.api.deps import get_current_user
 from app.models.user import User
 from app.schemas.user import UserCreate, UserOut
 import hmac
@@ -39,3 +40,9 @@ def login(
             headers={"WWW-Authenticate": "Bearer"},
         )
     return Token(access_token=create_access_token(user.id, remember))
+
+
+@router.get("/me", response_model=UserOut)
+def me(current_user: User = Depends(get_current_user)):
+    """המשתמש המחובר. משמש את הפרונט כדי להציג את תפריט המשתמש."""
+    return current_user

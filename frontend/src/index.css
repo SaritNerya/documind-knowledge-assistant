@@ -1,5 +1,7 @@
 @import "./styles/tokens.css";
 @import "./styles/forms.css";
+@import "./styles/avatar.css";
+@import "./styles/menu.css";
 
 /* ===== בסיס ===== */
 *, *::before, *::after { box-sizing: border-box; }
